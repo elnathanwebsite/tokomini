@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Toko</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(120deg, #1d3557, #457b9d);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: white;
+        }
+        .login-container {
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            padding: 20px 30px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        h1 {
+            margin-bottom: 20px;
+            font-size: 2rem;
+            color: #f4a261;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        input[type="text"], input[type="password"] {
+            background: #e5e5e5;
+        }
+        input[type="submit"] {
+            background: #f4a261;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        input[type="submit"]:hover {
+            background: #e76f51;
+        }
+        .error {
+            color: #e63946;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h1>Login Toko</h1>
+        <form id="loginForm">
+            <input type="text" id="storeName" placeholder="Nama Toko" required>
+            <input type="password" id="password" placeholder="Sandi" required>
+            <input type="submit" value="Login">
+            <p id="errorMessage" class="error"></p>
+        </form>
+    </div>
+
+    <script>
+        const correctStoreName = "MIKET";
+        const correctPassword = atob("QUFyZmFuVHRva29QUk9KRkFNYU5kT1RZSlBQUExPT0=="); 
+
+
+const obfuscatedLink = atob("Y1BHbmpVYWxCM0RtbE9HQlNLR1pQT0xBTz09");
+
+        document.getElementById('loginForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const storeName = document.getElementById('storeName').value.trim();
+            const password = document.getElementById('password').value;
+
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = '';
+
+            if (storeName === correctStoreName && password === correctPassword) {
+                // Redirect to the obfuscated link
+                window.location.href = obfuscatedLink;
+            } else {
+                errorMessage.textContent = 'Nama toko atau sandi salah!';
+            }
+        });
+    </script>
+</body>
+</html>

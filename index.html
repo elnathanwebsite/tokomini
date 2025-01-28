@@ -5,11 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Produk Toko</title>
     <script type="module">
-        // Import Firebase SDK
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
         import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js";
 
-        // Konfigurasi Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyDd8glQvhs-IvOMj6LRpJo1vYQi40DPCqM",
             authDomain: "ethan-el-nathan.firebaseapp.com",
@@ -21,14 +19,27 @@
             measurementId: "G-2G7YS5GZ51"
         };
 
-        // Inisialisasi Firebase
         const app = initializeApp(firebaseConfig);
         const database = getDatabase(app);
 
         document.addEventListener('DOMContentLoaded', () => {
             const productList = document.getElementById('product-list');
+            const menuIcon = document.getElementById('menu-icon');
+            const sidebar = document.getElementById('sidebar');
 
-            // Ambil data produk dari Firebase dan tampilkan
+            // Toggle laci/side menu saat ikon diklik
+            menuIcon.addEventListener('click', (e) => {
+                e.stopPropagation();
+                sidebar.style.display = sidebar.style.display === 'block' ? 'none' : 'block';
+            });
+
+            // Tutup laci jika klik di luar sidebar
+            document.addEventListener('click', (e) => {
+                if (sidebar.style.display === 'block' && !sidebar.contains(e.target)) {
+                    sidebar.style.display = 'none';
+                }
+            });
+
             const productRef = ref(database, 'products');
             onValue(productRef, (snapshot) => {
                 productList.innerHTML = '';
@@ -37,7 +48,7 @@
                     for (const id in data) {
                         const product = data[id];
                         productList.innerHTML += `
-                            <div class="product-card" id="product-${id}">
+                            <div class="product-card">
                                 <img src="${product.image}" alt="${product.name}" class="product-image"/>
                                 <div class="product-info">
                                     <h3 class="product-name">${product.name}</h3>
@@ -61,124 +72,179 @@
         });
     </script>
     <style>
-        /* Global styles */
+        /* Global Styles */
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             margin: 0;
-            padding: 20px;
-            background: #f7f7f7;
+            padding: 0;
+            background-color: #f4f4f9;
             color: #333;
         }
 
         h1 {
             text-align: center;
-            margin-bottom: 40px;
+            margin: 20px 0;
             font-size: 2.5rem;
         }
 
-        .product-list {
+        /* Header Styles */
+        .header {
             display: flex;
-            flex-wrap: wrap;
             justify-content: space-between;
-            gap: 20px;
-            padding: 0;
-            list-style: none;
+            align-items: center;
+            padding: 15px 20px;
+            background-color: #34495e;
+            color: white;
         }
 
-        /* Product card styles */
+        #menu-icon {
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Sidebar Styles */
+        #sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            height: 100%;
+            background-color: #2c3e50;
+            color: white;
+            display: none; /* Awalnya disembunyikan */
+            z-index: 1000;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
+            padding: 20px;
+        }
+
+        .sidebar a {
+            display: block; /* Agar tersusun vertikal */
+            color: white; /* Warna font putih */
+            text-decoration: none; /* Hilangkan garis bawah */
+            margin-bottom: 20px; /* Spasi antar link */
+            font-size: 1.2rem;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        .sidebar a:hover {
+            color: #1abc9c; /* Warna saat di-hover */
+        }
+
+        /* Main Content */
+        .product-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
         .product-card {
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: white;
+            border-radius: 12px;
             overflow: hidden;
-            width: calc(33% - 20px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
         .product-card:hover {
             transform: translateY(-10px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
         }
 
         .product-image {
             width: 100%;
             height: 200px;
             object-fit: cover;
-            border-bottom: 2px solid #f1f1f1;
         }
 
         .product-info {
-            padding: 15px;
+            padding: 20px;
         }
 
         .product-name {
             font-size: 1.5rem;
             font-weight: bold;
-            color: #333;
+            margin: 0 0 10px;
+            color: #2c3e50;
         }
 
         .product-description {
             font-size: 1rem;
-            color: #666;
-            margin: 10px 0;
+            margin: 0 0 15px;
+            color: #7f8c8d;
         }
 
         .product-price {
-            font-size: 1.2rem;
+            font-size: 1.25rem;
             font-weight: bold;
-            color: #FF5722;
+            color: #27ae60;
+            margin: 0 0 10px;
         }
 
         .product-stock {
             font-size: 1rem;
-            color: #4CAF50;
+            margin: 0 0 20px;
+            color: #8e44ad;
         }
 
-        /* Buttons */
         .buy-button, .order-button {
+            display: block;
             width: 100%;
             padding: 10px;
-            font-size: 1rem;
+            margin: 10px 0;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
             cursor: pointer;
-            margin-top: 10px;
+            transition: background-color 0.3s ease;
         }
 
         .buy-button {
-            background-color: #4CAF50;
-            color: white;
-        }
-
-        .order-button {
-            background-color: #2196F3;
+            background-color: #2980b9;
             color: white;
         }
 
         .buy-button:hover {
-            background-color: #45a049;
+            background-color: #1c5987;
+        }
+
+        .order-button {
+            background-color: #27ae60;
+            color: white;
         }
 
         .order-button:hover {
-            background-color: #1976D2;
+            background-color: #1d8f48;
         }
 
-        /* Responsive styles */
-        @media screen and (max-width: 1024px) {
-            .product-card {
-                width: calc(50% - 20px);
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
             }
-        }
 
-        @media screen and (max-width: 768px) {
-            .product-card {
-                width: 100%;
+            .product-info {
+                padding: 15px;
+            }
+
+            .buy-button, .order-button {
+                font-size: 0.9rem;
             }
         }
     </style>
 </head>
 <body>
-    <h1>Produk Toko</h1>
+    <div class="header">
+        <h1>Produk Toko</h1>
+        <div id="menu-icon">☰</div>
+    </div>
+    <div id="sidebar" class="sidebar">
+        <a href="index.html">Home</a>
+        <a href="LOGINPEMILIK.html">KHUSUS PEMILIK TOKO</a>
+        <a href="https://wa.me/6283180667700">BELI TOKO</a>
+        <a href="https://wa.me/6283180667700">Kontak DEV</a>
+    </div>
     <div class="product-list" id="product-list"></div>
 </body>
 </html>
