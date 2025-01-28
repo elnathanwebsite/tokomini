@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Pesanan</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f7f7f7;
+        }
+
+        .form-container {
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            width: 400px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        label {
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        /* Animasi Loading */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            display: none;
+        }
+
+        .snake-loader {
+            width: 50px;
+            height: 50px;
+            border: 5px solid transparent;
+            border-top: 5px solid #4CAF50;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Navbar bawah */
+        .navbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #333;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            z-index: 1000;
+        }
+
+        .navbar button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .navbar button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="form-container">
+        <h1>Form Pesanan</h1>
+        <form id="orderForm">
+            <label for="name">Nama Pembeli</label>
+            <input type="text" id="name" required>
+
+            <label for="address">Alamat Pembeli</label>
+            <input type="text" id="address" required>
+
+            <label for="phone">Nomor Telepon</label>
+            <input type="text" id="phone" required>
+
+            <button type="submit">Kirim Pesanan</button>
+        </form>
+    </div>
+
+    <!-- Animasi Loading -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="snake-loader"></div>
+    </div>
+
+    <!-- Navbar bawah -->
+    <div class="navbar">
+        <button onclick="window.location.href='hubungi.html';">Buka Toko Anda</button>
+        
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-app.js";
+        import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDXxVMHR14C2QXq8tzcm2TA5q6AReIyESM",
+            authDomain: "ethteam-66c6e.firebaseapp.com",
+            projectId: "ethteam-66c6e",
+            storageBucket: "ethteam-66c6e.appspot.com",
+            messagingSenderId: "753594444243",
+            appId: "1:753594444243:web:d834d56e41efa1d46fe726",
+            measurementId: "G-3NQH4TNCTH",
+            databaseURL: "https://ethteam-66c6e-default-rtdb.asia-southeast1.firebasedatabase.app"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        const orderForm = document.getElementById('orderForm');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+
+        orderForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const name = document.getElementById('name').value;
+            const address = document.getElementById('address').value;
+            const phone = document.getElementById('phone').value;
+
+            const ordersRef = ref(database, 'orders');
+            const newOrderRef = push(ordersRef);
+
+            set(newOrderRef, {
+                name: name,
+                address: address,
+                phone: phone
+            }).then(() => {
+                alert("Pesanan berhasil dikirim!");
+                loadingOverlay.style.display = 'flex'; // Tampilkan animasi loading
+                setTimeout(() => {
+                    window.location.href = "TQOREDER.html"; // Ganti dengan URL tujuan
+                }, 3000); // Loading berlangsung selama 3 detik sebelum diarahkan
+            }).catch((error) => {
+                console.error("Terjadi kesalahan:", error);
+                alert("Gagal mengirim pesanan. Coba lagi.");
+            });
+        });
+    </script>
+
+</body>
+</html>

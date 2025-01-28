@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produk Toko</title>
+    <script type="module">
+        // Import Firebase SDK
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js";
+
+        // Konfigurasi Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDd8glQvhs-IvOMj6LRpJo1vYQi40DPCqM",
+            authDomain: "ethan-el-nathan.firebaseapp.com",
+            databaseURL: "https://ethan-el-nathan-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "ethan-el-nathan",
+            storageBucket: "ethan-el-nathan.appspot.com",
+            messagingSenderId: "1079423989695",
+            appId: "1:1079423989695:web:2137c7a9e1490e90d9130a",
+            measurementId: "G-2G7YS5GZ51"
+        };
+
+        // Inisialisasi Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const productList = document.getElementById('product-list');
+
+            // Ambil data produk dari Firebase dan tampilkan
+            const productRef = ref(database, 'products');
+            onValue(productRef, (snapshot) => {
+                productList.innerHTML = '';
+                const data = snapshot.val();
+                if (data) {
+                    for (const id in data) {
+                        const product = data[id];
+                        productList.innerHTML += `
+                            <div class="product-card" id="product-${id}">
+                                <img src="${product.image}" alt="${product.name}" class="product-image"/>
+                                <div class="product-info">
+                                    <h3 class="product-name">${product.name}</h3>
+                                    <p class="product-description">${product.description}</p>
+                                    <p class="product-price">Rp ${product.price}</p>
+                                    <p class="product-stock">Stok: ${product.stock}</p>
+                                    <a href="${product.paymentLink}" target="_blank">
+                                        <button class="buy-button">Bayar Langsung</button>
+                                    </a>
+                                    <a href="BUATPESANAN.html?product=${encodeURIComponent(product.name)}&price=${product.price}">
+                                        <button class="order-button">Buat Pesanan</button>
+                                    </a>
+                                </div>
+                            </div>
+                        `;
+                    }
+                } else {
+                    productList.innerHTML = '<p>Tidak ada produk tersedia.</p>';
+                }
+            });
+        });
+    </script>
+    <style>
+        /* Global styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f7f7f7;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2.5rem;
+        }
+
+        .product-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 0;
+            list-style: none;
+        }
+
+        /* Product card styles */
+        .product-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            width: calc(33% - 20px);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-bottom: 2px solid #f1f1f1;
+        }
+
+        .product-info {
+            padding: 15px;
+        }
+
+        .product-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .product-description {
+            font-size: 1rem;
+            color: #666;
+            margin: 10px 0;
+        }
+
+        .product-price {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #FF5722;
+        }
+
+        .product-stock {
+            font-size: 1rem;
+            color: #4CAF50;
+        }
+
+        /* Buttons */
+        .buy-button, .order-button {
+            width: 100%;
+            padding: 10px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .buy-button {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .order-button {
+            background-color: #2196F3;
+            color: white;
+        }
+
+        .buy-button:hover {
+            background-color: #45a049;
+        }
+
+        .order-button:hover {
+            background-color: #1976D2;
+        }
+
+        /* Responsive styles */
+        @media screen and (max-width: 1024px) {
+            .product-card {
+                width: calc(50% - 20px);
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            .product-card {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Produk Toko</h1>
+    <div class="product-list" id="product-list"></div>
+</body>
+</html>
