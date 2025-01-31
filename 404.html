@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Halaman Tidak Ditemukan</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #1a1a1a; /* Latar belakang hitam */
+            color: #fff;
+        }
+
+        .container-404 {
+            text-align: center;
+            background: rgba(0, 0, 0, 0.8); /* Container hitam transparan */
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(255, 69, 0, 0.3); /* Glow effect orange */
+            max-width: 600px;
+            width: 90%;
+            border: 2px solid #ff4500; /* Border orange */
+        }
+
+        .error-code {
+            font-size: 120px;
+            font-weight: bold;
+            background: linear-gradient(45deg, #ff4500, #ff0000); /* Gradient orange ke merah */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 10px rgba(255, 69, 0, 0.5);
+            margin-bottom: 20px;
+        }
+
+        .error-icon {
+            font-size: 60px;
+            color: #ff4500; /* Icon orange */
+            margin: 20px 0;
+        }
+
+        .error-message {
+            font-size: 24px;
+            color: #ff4500; /* Text orange */
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .error-description {
+            color: #fff;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .back-button {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(45deg, #ff4500, #ff0000); /* Gradient orange ke merah */
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .back-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 20px rgba(255, 69, 0, 0.6);
+            background: linear-gradient(45deg, #ff0000, #ff4500); /* Reverse gradient on hover */
+        }
+
+        .store-info {
+            margin-top: 30px;
+            font-size: 14px;
+            color: #ff4500; /* Orange text */
+        }
+
+        @media (max-width: 480px) {
+            .error-code {
+                font-size: 80px;
+            }
+
+            .error-message {
+                font-size: 20px;
+            }
+        }
+
+        /* Custom animation untuk efek api */
+        @keyframes flame {
+            0% { text-shadow: 0 0 10px #ff4500, 0 0 20px #ff4500; }
+            50% { text-shadow: 0 0 20px #ff0000, 0 0 40px #ff0000; }
+            100% { text-shadow: 0 0 10px #ff4500, 0 0 20px #ff4500; }
+        }
+
+        .flame-effect {
+            animation: flame 2s infinite;
+        }
+
+        /* Waktu real-time */
+        #current-time {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            color: #ff4500;
+            font-size: 14px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div id="current-time">2025-01-31 15:12:57 UTC</div>
+    <div class="container-404">
+        <div class="error-code flame-effect">404</div>
+        <div class="error-icon flame-effect">
+            <i class="fas fa-store"></i>
+        </div>
+        <h1 class="error-message">Halaman Tidak Ditemukan</h1>
+        <p class="error-description">
+            Maaf, halaman yang Anda cari sedang tidak tersedia.
+            Mungkin sedang dalam perbaikan atau telah dipindahkan ke alamat lain.
+        </p>
+        <a href="index.html" class="back-button">
+            <i class="fas fa-home"></i> Kembali ke Beranda
+        </a>
+        <div class="store-info">
+            <p>© 2025 Elnathan Website</p>
+            <p><i class="fas fa-clock"></i> Online 24/7</p>
+            <p><i class="fas fa-user"></i> elnathanwebsite</p>
+        </div>
+    </div>
+
+    <script>
+        // Update waktu real-time
+        function updateTime() {
+            const timeElement = document.getElementById('current-time');
+            const now = new Date();
+            const formattedTime = now.toISOString().replace('T', ' ').substr(0, 19) + ' UTC';
+            timeElement.textContent = formattedTime;
+        }
+
+        setInterval(updateTime, 1000);
+    </script>
+</body>
+</html>
