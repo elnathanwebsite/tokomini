@@ -3,7 +3,389 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Produk Toko</title>
+    <title>Modern Shop - Elnathan</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-black: #0a0a0a;
+            --primary-orange: #ff6b2b;
+            --primary-red: #e31837;
+            --accent-gray: #1a1a1a;
+            --text-white: #ffffff;
+            --neon-glow: 0 0 10px rgba(255, 107, 43, 0.5),
+                         0 0 20px rgba(255, 107, 43, 0.3),
+                         0 0 30px rgba(255, 107, 43, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary-black) 0%, var(--accent-gray) 100%);
+            color: var(--text-white);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(255, 107, 43, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(227, 24, 55, 0.1) 0%, transparent 40%);
+            pointer-events: none;
+        }
+
+        /* Modern Header */
+        .header {
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 107, 43, 0.3);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .datetime-display {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--primary-orange);
+            font-size: 0.9rem;
+            padding: 8px 15px;
+            background: rgba(255, 107, 43, 0.1);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 107, 43, 0.2);
+            text-shadow: var(--neon-glow);
+        }
+
+        .user-info {
+            font-size: 0.85rem;
+            color: var(--text-white);
+            opacity: 0.8;
+        }
+
+        .logo {
+            font-size: 2.2rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, var(--primary-orange), var(--primary-red));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: var(--neon-glow);
+            letter-spacing: 2px;
+        }
+
+        .menu-icon {
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: var(--primary-orange);
+            transition: all 0.3s ease;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(255, 107, 43, 0.1);
+            border: 1px solid rgba(255, 107, 43, 0.2);
+        }
+
+        .menu-icon:hover {
+            transform: rotate(90deg);
+            background: rgba(255, 107, 43, 0.2);
+            box-shadow: var(--neon-glow);
+        }
+
+        /* Enhanced Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 300px;
+            height: 100vh;
+            background: rgba(10, 10, 10, 0.98);
+            backdrop-filter: blur(15px);
+            z-index: 1001;
+            padding-top: 80px;
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-left: 1px solid rgba(255, 107, 43, 0.3);
+            box-shadow: -5px 0 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .sidebar.active {
+            right: 0;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+            color: var(--primary-orange);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(255, 107, 43, 0.1);
+            border: 1px solid rgba(255, 107, 43, 0.2);
+        }
+
+        .close-btn:hover {
+            transform: rotate(90deg);
+            background: rgba(255, 107, 43, 0.2);
+            box-shadow: var(--neon-glow);
+        }
+
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            padding: 15px 30px;
+            color: var(--text-white);
+            text-decoration: none;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            margin: 5px 15px;
+            border-radius: 12px;
+        }
+
+        .sidebar a i {
+            margin-right: 10px;
+            width: 24px;
+            text-align: center;
+        }
+
+        .sidebar a:hover {
+            background: rgba(255, 107, 43, 0.1);
+            transform: translateX(5px);
+            box-shadow: var(--neon-glow);
+        }
+
+        /* Enhanced Product Grid */
+        .main-content {
+            margin-top: 100px;
+            padding: 20px;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .product-card {
+            background: rgba(26, 26, 26, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255, 107, 43, 0.1);
+            animation: fadeInUp 0.6s ease-out forwards;
+            position: relative;
+        }
+
+        .product-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 20px;
+            background: linear-gradient(45deg, 
+                rgba(255, 107, 43, 0.1), 
+                rgba(227, 24, 55, 0.1));
+            opacity: 0;
+            transition: 0.3s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 30px rgba(255, 107, 43, 0.2);
+            border-color: rgba(255, 107, 43, 0.3);
+        }
+
+        .product-card:hover::before {
+            opacity: 1;
+        }
+
+        .product-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            transition: all 0.5s ease;
+        }
+
+        .product-card:hover .product-image {
+            transform: scale(1.05);
+        }
+
+        .product-details {
+            padding: 25px;
+            position: relative;
+        }
+
+        .product-name {
+            font-size: 1.4rem;
+            color: var(--primary-orange);
+            margin-bottom: 15px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .product-price {
+            display: inline-block;
+            background: linear-gradient(45deg, var(--primary-orange), var(--primary-red));
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin: 15px 0;
+        }
+
+        .button-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 12px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border: 1px solid rgba(255, 107, 43, 0.2);
+        }
+
+        .btn-primary {
+            background: var(--primary-orange);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--primary-red);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--neon-glow);
+        }
+
+        /* Enhanced Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .datetime-display {
+                display: none;
+            }
+
+            .header-content {
+                padding: 15px 20px;
+            }
+
+            .logo {
+                font-size: 1.8rem;
+            }
+
+            .product-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .button-container {
+                grid-template-columns: 1fr;
+            }
+
+            .product-details {
+                padding: 20px;
+            }
+
+            .product-name {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="datetime-display" id="datetime"></div>
+                <h1 class="logo">MIKET</h1>
+            </div>
+            <div class="menu-icon" id="menuToggle">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <nav class="sidebar" id="sidebar">
+        <div class="close-btn" id="closeBtn">
+            <i class="fas fa-times"></i>
+        </div>
+        <a href="index.html"><i class="fas fa-home"></i> Home</a>
+        <a href="LOGINPEMILIK.html"><i class="fas fa-user-shield"></i> KHUSUS PEMILIK TOKO</a>
+        <a href="https://wa.me/6283180667700"><i class="fas fa-store"></i> BELI TOKO</a>
+        <a href="https://wa.me/6283180667700"><i class="fas fa-headset"></i> Kontak DEV</a>
+    </nav>
+
+    <main class="main-content">
+        <div class="product-grid" id="product-list"></div>
+    </main>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
         import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js";
@@ -22,229 +404,78 @@
         const app = initializeApp(firebaseConfig);
         const database = getDatabase(app);
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const productList = document.getElementById('product-list');
-            const menuIcon = document.getElementById('menu-icon');
-            const sidebar = document.getElementById('sidebar');
+        // DOM Elements
+        const productList = document.getElementById('product-list');
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        const closeBtn = document.getElementById('closeBtn');
+        const datetimeDisplay = document.getElementById('datetime');
 
-            // Toggle laci/side menu saat ikon diklik
-            menuIcon.addEventListener('click', (e) => {
-                e.stopPropagation();
-                sidebar.style.display = sidebar.style.display === 'block' ? 'none' : 'block';
-            });
+        // Update DateTime
+        function updateDateTime() {
+            const now = new Date();
+            const formatted = now.toISOString().replace('T', ' ').substring(0, 19) + ' UTC';
+            datetimeDisplay.textContent = formatted;
+        }
 
-            // Tutup laci jika klik di luar sidebar
-            document.addEventListener('click', (e) => {
-                if (sidebar.style.display === 'block' && !sidebar.contains(e.target)) {
-                    sidebar.style.display = 'none';
-                }
-            });
+        setInterval(updateDateTime, 1000);
+        updateDateTime();
 
-            const productRef = ref(database, 'products');
-            onValue(productRef, (snapshot) => {
-                productList.innerHTML = '';
-                const data = snapshot.val();
-                if (data) {
-                    for (const id in data) {
-                        const product = data[id];
-                        productList.innerHTML += `
-                            <div class="product-card">
-                                <img src="${product.image}" alt="${product.name}" class="product-image"/>
-                                <div class="product-info">
-                                    <h3 class="product-name">${product.name}</h3>
-                                    <p class="product-description">${product.description}</p>
-                                    <p class="product-price">Rp ${product.price}</p>
-                                    <p class="product-stock">Stok: ${product.stock}</p>
-                                    <a href="${product.paymentLink}" target="_blank">
-                                        <button class="buy-button">Bayar Langsung</button>
-                                    </a>
-                                    <a href="BUATPESANAN.html?product=${encodeURIComponent(product.name)}&price=${product.price}">
-                                        <button class="order-button">Buat Pesanan</button>
-                                    </a>
-                                </div>
+        // Sidebar Toggle
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.add('active');
+        });
+
+        closeBtn.addEventListener('click', () => {
+            sidebar.classList.remove('active');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+                sidebar.classList.remove('active');
+            }
+        });
+
+        // Load Products
+        const productRef = ref(database, 'products');
+        onValue(productRef, (snapshot) => {
+            productList.innerHTML = '';
+            const data = snapshot.val();
+            
+            if (data) {
+                let delay = 0;
+                for (const id in data) {
+                    const product = data[id];
+                    const productCard = document.createElement('div');
+                    productCard.className = 'product-card';
+                    productCard.style.animationDelay = `${delay}s`;
+                    
+                    productCard.innerHTML = `
+                        <img src="${product.image}" alt="${product.name}" class="product-image"/>
+                        <div class="product-details">
+                            <h3 class="product-name">${product.name}</h3>
+                            <p class="product-description">${product.description}</p>
+                            <p class="product-price">Rp ${product.price.toLocaleString('id-ID')}</p>
+                            <p class="product-stock">Stok: ${product.stock}</p>
+                            <div class="button-container">
+                                <a href="${product.paymentLink}" target="_blank" class="btn btn-primary">
+                                    <i class="fas fa-shopping-cart"></i> Bayar
+                                </a>
+                                <a href="BUATPESANAN.html?product=${encodeURIComponent(product.name)}&price=${product.price}" 
+                                   class="btn btn-secondary">
+                                    <i class="fas fa-clipboard-list"></i> Pesan
+                                </a>
                             </div>
-                        `;
-                    }
-                } else {
-                    productList.innerHTML = '<p>Tidak ada produk tersedia.</p>';
+                        </div>
+                    `;
+                    
+                    productList.appendChild(productCard);
+                    delay += 0.1;
                 }
-            });
+            } else {
+                productList.innerHTML = '<p style="text-align: center; color: #fff;">Tidak ada produk tersedia.</p>';
+            }
         });
     </script>
-    <style>
-        /* Global Styles */
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f9;
-            color: #333;
-        }
-
-        h1 {
-            text-align: center;
-            margin: 20px 0;
-            font-size: 2.5rem;
-        }
-
-        /* Header Styles */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 20px;
-            background-color: #34495e;
-            color: white;
-        }
-
-        #menu-icon {
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-
-        /* Sidebar Styles */
-        #sidebar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 250px;
-            height: 100%;
-            background-color: #2c3e50;
-            color: white;
-            display: none; /* Awalnya disembunyikan */
-            z-index: 1000;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
-            padding: 20px;
-        }
-
-        .sidebar a {
-            display: block; /* Agar tersusun vertikal */
-            color: white; /* Warna font putih */
-            text-decoration: none; /* Hilangkan garis bawah */
-            margin-bottom: 20px; /* Spasi antar link */
-            font-size: 1.2rem;
-            font-weight: bold;
-            transition: color 0.3s ease;
-        }
-
-        .sidebar a:hover {
-            color: #1abc9c; /* Warna saat di-hover */
-        }
-
-        /* Main Content */
-        .product-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            padding: 20px;
-        }
-
-        .product-card {
-            background-color: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .product-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-        }
-
-        .product-image {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-
-        .product-info {
-            padding: 20px;
-        }
-
-        .product-name {
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin: 0 0 10px;
-            color: #2c3e50;
-        }
-
-        .product-description {
-            font-size: 1rem;
-            margin: 0 0 15px;
-            color: #7f8c8d;
-        }
-
-        .product-price {
-            font-size: 1.25rem;
-            font-weight: bold;
-            color: #27ae60;
-            margin: 0 0 10px;
-        }
-
-        .product-stock {
-            font-size: 1rem;
-            margin: 0 0 20px;
-            color: #8e44ad;
-        }
-
-        .buy-button, .order-button {
-            display: block;
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        .buy-button {
-            background-color: #2980b9;
-            color: white;
-        }
-
-        .buy-button:hover {
-            background-color: #1c5987;
-        }
-
-        .order-button {
-            background-color: #27ae60;
-            color: white;
-        }
-
-        .order-button:hover {
-            background-color: #1d8f48;
-        }
-
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2rem;
-            }
-
-            .product-info {
-                padding: 15px;
-            }
-
-            .buy-button, .order-button {
-                font-size: 0.9rem;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <h1>Produk Toko</h1>
-        <div id="menu-icon">☰</div>
-    </div>
-    <div id="sidebar" class="sidebar">
-        <a href="index.html">Home</a>
-        <a href="LOGINPEMILIK.html">KHUSUS PEMILIK TOKO</a>
-        <a href="https://wa.me/6283180667700">BELI TOKO</a>
-        <a href="https://wa.me/6283180667700">Kontak DEV</a>
-    </div>
-    <div class="product-list" id="product-list"></div>
 </body>
 </html>

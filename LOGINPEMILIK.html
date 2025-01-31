@@ -4,93 +4,245 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Toko</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
+        :root {
+            --primary-gradient: linear-gradient(120deg, #1d3557, #457b9d);
+            --accent-color: #f4a261;
+            --error-color: #e63946;
+            --text-white: #ffffff;
+            --input-bg: #e5e5e5;
+        }
+
+        * {
             margin: 0;
             padding: 0;
-            background: linear-gradient(120deg, #1d3557, #457b9d);
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: var(--primary-gradient);
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            color: white;
+            min-height: 100vh;
+            color: var(--text-white);
         }
+
         .login-container {
             background: rgba(0, 0, 0, 0.8);
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            padding: 20px 30px;
-            width: 100%;
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            width: 90%;
             max-width: 400px;
             text-align: center;
+            animation: fadeIn 0.5s ease;
         }
-        h1 {
+
+        .datetime-display {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
             margin-bottom: 20px;
-            font-size: 2rem;
-            color: #f4a261;
         }
+
+        .user-info {
+            font-size: 0.8rem;
+            color: var(--accent-color);
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+            font-size: 2rem;
+            color: var(--accent-color);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+        }
+
         input {
             width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
+            padding: 15px 15px 15px 45px;
             border: none;
-            border-radius: 5px;
+            border-radius: 10px;
             font-size: 1rem;
+            transition: all 0.3s ease;
+            background: var(--input-bg);
         }
-        input[type="text"], input[type="password"] {
-            background: #e5e5e5;
+
+        input:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px var(--accent-color);
         }
-        input[type="submit"] {
-            background: #f4a261;
+
+        .submit-btn {
+            background: var(--accent-color);
             color: white;
-            font-weight: bold;
+            font-weight: 600;
             cursor: pointer;
-            transition: background 0.3s ease;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            width: 100%;
+            font-size: 1rem;
+            transition: all 0.3s ease;
         }
-        input[type="submit"]:hover {
+
+        .submit-btn:hover {
             background: #e76f51;
+            transform: translateY(-2px);
         }
+
         .error {
-            color: #e63946;
+            color: var(--error-color);
             font-size: 0.9rem;
+            margin-top: 15px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .error.visible {
+            opacity: 1;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .loading {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--accent-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
     <div class="login-container">
+        <div class="datetime-display" id="datetime">2025-01-31 13:22:17</div>
+        <div class="user-info">elnathanwebsite</div>
         <h1>Login Toko</h1>
         <form id="loginForm">
-            <input type="text" id="storeName" placeholder="Nama Toko" required>
-            <input type="password" id="password" placeholder="Sandi" required>
-            <input type="submit" value="Login">
+            <div class="input-group">
+                <i class="fas fa-store"></i>
+                <input type="text" id="storeName" placeholder="Nama Toko" required>
+            </div>
+            <div class="input-group">
+                <i class="fas fa-lock"></i>
+                <input type="password" id="password" placeholder="Sandi" required>
+            </div>
+            <button type="submit" class="submit-btn">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </button>
             <p id="errorMessage" class="error"></p>
         </form>
     </div>
 
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+    </div>
+
     <script>
+        // Constants
         const correctStoreName = "MIKET";
-        const correctPassword = atob("QUFyZmFuVHRva29QUk9KRkFNYU5kT1RZSlBQUExPT0=="); 
+        const correctPassword = atob("VE9LT01JTkkgQVJJRkFO"); // TOKOMINI ARIFAN
+        const redirectPage = "penjual.html";
 
+        // Update datetime
+        function updateDateTime() {
+            const now = new Date();
+            const formatted = now.toISOString().replace('T', ' ').substring(0, 19);
+            document.getElementById('datetime').textContent = formatted;
+        }
 
-const obfuscatedLink = atob("Y1BHbmpVYWxCM0RtbE9HQlNLR1pQT0xBTz09");
+        setInterval(updateDateTime, 1000);
+        updateDateTime();
 
-        document.getElementById('loginForm').addEventListener('submit', function (e) {
+        // Show/Hide loading
+        function toggleLoading(show) {
+            const loading = document.getElementById('loading');
+            loading.style.display = show ? 'flex' : 'none';
+        }
+
+        // Show error message
+        function showError(message) {
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = message;
+            errorMessage.classList.add('visible');
+            
+            setTimeout(() => {
+                errorMessage.classList.remove('visible');
+            }, 3000);
+        }
+
+        // Handle form submission
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
 
             const storeName = document.getElementById('storeName').value.trim();
             const password = document.getElementById('password').value;
 
-            const errorMessage = document.getElementById('errorMessage');
-            errorMessage.textContent = '';
+            toggleLoading(true);
 
-            if (storeName === correctStoreName && password === correctPassword) {
-                // Redirect to the obfuscated link
-                window.location.href = obfuscatedLink;
-            } else {
-                errorMessage.textContent = 'Nama toko atau sandi salah!';
-            }
+            setTimeout(() => {
+                if (storeName === correctStoreName && password === correctPassword) {
+                    localStorage.setItem('isLoggedIn', 'true');
+                    window.location.href = redirectPage;
+                } else {
+                    toggleLoading(false);
+                    showError('Nama toko atau sandi salah!');
+                }
+            }, 1000);
         });
+
+        // Check if already logged in
+        if (localStorage.getItem('isLoggedIn') === 'true') {
+            window.location.href = redirectPage;
+        }
     </script>
 </body>
 </html>
