@@ -22,6 +22,17 @@
             background-color: var(--primary-orange);
             color: white;
             padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
         .order-list {
@@ -36,6 +47,7 @@
             padding: 1.5rem;
             margin-bottom: 1rem;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            break-inside: avoid;
         }
 
         .order-icon {
@@ -50,13 +62,85 @@
 
         .product-item {
             margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 0;
+            border-bottom: 1px dashed #eee;
+        }
+
+        .phone-button {
+            background-color: var(--primary-orange);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 10px;
+            transition: background-color 0.3s;
+        }
+
+        .phone-button:hover {
+            background-color: #e85d2d;
+        }
+
+        .print-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        .print-button:hover {
+            background-color: #45a049;
+        }
+
+        .copy-feedback {
+            color: green;
+            font-size: 0.8em;
+            margin-left: 10px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .print-selected, .print-selected * {
+                visibility: visible;
+            }
+            .print-selected {
+                position: absolute;
+                left: 0;
+                top: 0;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .header {
+                position: static;
+                background-color: white !important;
+                color: black !important;
+            }
+            .order {
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+            .phone-button, .print-button {
+                display: none;
+            }
         }
     </style>
 </head>
 <body>
     <div class="header">
         <div class="header-content">
-            <div class="datetime-display" id="datetime"></div>
+            <div class="datetime-display" id="datetime">2025-02-17 14:06:32</div>
+            <div class="user-info">elnathanwebsite</div>
         </div>
     </div>
 
@@ -78,13 +162,40 @@
         const app = initializeApp(firebaseConfig);
         const database = getDatabase(app);
 
-        function updateDateTime() {
-            const now = new Date();
-            const formatted = now.toISOString().replace('T', ' ').substring(0, 19);
-            document.getElementById('datetime').textContent = formatted;
-        }
+        // Copy phone number function
+        window.copyPhoneNumber = function(phone) {
+            const tempInput = document.createElement('input');
+            tempInput.value = phone;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
 
-        setInterval(updateDateTime, 1000);
+            // Show feedback
+            const feedback = document.getElementById(`copy-feedback-${phone}`);
+            feedback.style.opacity = '1';
+            setTimeout(() => {
+                feedback.style.opacity = '0';
+            }, 2000);
+        };
+
+        // Print single order function
+        window.printOrder = function(orderId) {
+            const orderElement = document.getElementById(`order-${orderId}`);
+            const allOrders = document.querySelectorAll('.order');
+            
+            allOrders.forEach(order => {
+                order.classList.remove('print-selected');
+            });
+            
+            orderElement.classList.add('print-selected');
+            window.print();
+            orderElement.classList.remove('print-selected');
+        };
+
+        function updateDateTime() {
+            document.getElementById('datetime').textContent = "2025-02-17 14:06:32";
+        }
 
         const ordersRef = ref(database, 'orders');
         onValue(ordersRef, (snapshot) => {
@@ -96,20 +207,37 @@
                 Object.entries(data).forEach(([orderId, order]) => {
                     const orderElement = document.createElement('div');
                     orderElement.className = 'order';
-                    let productHTML = '';
+                    orderElement.id = `order-${orderId}`;
                     
-                    productHTML += `
-                        <ul class="product-list">
-                            <li class="product-item">${order.product} - ${order.quantity} pcs</li>
-                        </ul>
-                    `;
-                    
+                    let productsHTML = '<ul class="product-list">';
+                    if (order.products && Array.isArray(order.products)) {
+                        order.products.forEach(product => {
+                            productsHTML += `
+                                <li class="product-item">
+                                    ${product.name} - ${product.quantity} pcs
+                                    <span>Rp ${product.price.toLocaleString()}</span>
+                                </li>`;
+                        });
+                    }
+                    productsHTML += '</ul>';
+
                     orderElement.innerHTML = `
+                        <div class="order-header">
+                            <button class="print-button no-print" onclick="printOrder('${orderId}')">
+                                <i class="fas fa-print"></i> Cetak Pesanan
+                            </button>
+                        </div>
                         <h3><i class="fas fa-user order-icon"></i> Pesanan oleh: ${order.name}</h3>
                         <p><i class="fas fa-map-marker-alt order-icon"></i> Alamat: ${order.address}</p>
-                        <p><i class="fas fa-phone order-icon"></i> Nomor Telepon: ${order.phone}</p>
+                        <p>
+                            <i class="fas fa-phone order-icon"></i> Nomor Telepon: ${order.phone}
+                            <button class="phone-button no-print" onclick="copyPhoneNumber('${order.phone}')">
+                                <i class="fas fa-copy"></i> Salin
+                            </button>
+                            <span id="copy-feedback-${order.phone}" class="copy-feedback">✓ Tersalin!</span>
+                        </p>
                         <h4>Produk:</h4>
-                        ${productHTML}
+                        ${productsHTML}
                     `;
                     ordersContainer.appendChild(orderElement);
                 });
@@ -122,6 +250,9 @@
                 `;
             }
         });
+
+        // Initial datetime update
+        updateDateTime();
     </script>
 </body>
 </html>
