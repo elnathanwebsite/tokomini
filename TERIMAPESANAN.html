@@ -22,9 +22,6 @@
             background-color: var(--primary-orange);
             color: white;
             padding: 1rem;
-            position: sticky;
-            top: 0;
-            z-index: 100;
         }
 
         .header-content {
@@ -47,7 +44,6 @@
             padding: 1.5rem;
             margin-bottom: 1rem;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            break-inside: avoid;
         }
 
         .order-icon {
@@ -58,14 +54,12 @@
         .product-list {
             margin-top: 10px;
             padding-left: 20px;
+            list-style-type: none;
         }
 
         .product-item {
-            margin-bottom: 5px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 5px 0;
+            margin-bottom: 8px;
+            padding: 8px;
             border-bottom: 1px dashed #eee;
         }
 
@@ -84,6 +78,13 @@
             background-color: #e85d2d;
         }
 
+        .copy-message {
+            color: green;
+            display: none;
+            margin-left: 10px;
+            font-size: 0.9em;
+        }
+
         .print-button {
             background-color: #4CAF50;
             color: white;
@@ -91,47 +92,24 @@
             padding: 8px 15px;
             border-radius: 4px;
             cursor: pointer;
-            margin-right: 10px;
+            margin-top: 10px;
         }
 
         .print-button:hover {
             background-color: #45a049;
         }
 
-        .copy-feedback {
-            color: green;
-            font-size: 0.8em;
-            margin-left: 10px;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
         @media print {
-            body * {
-                visibility: hidden;
-            }
-            .print-selected, .print-selected * {
-                visibility: visible;
-            }
-            .print-selected {
-                position: absolute;
-                left: 0;
-                top: 0;
-            }
             .no-print {
                 display: none !important;
             }
-            .header {
-                position: static;
-                background-color: white !important;
-                color: black !important;
-            }
             .order {
-                box-shadow: none;
+                page-break-inside: avoid;
                 border: 1px solid #ddd;
             }
-            .phone-button, .print-button {
-                display: none;
+            .header {
+                background-color: white !important;
+                color: black !important;
             }
         }
     </style>
@@ -139,13 +117,16 @@
 <body>
     <div class="header">
         <div class="header-content">
-            <div class="datetime-display" id="datetime">2025-02-17 14:06:32</div>
+            <div class="datetime-display" id="datetime">2025-02-17 14:13:27</div>
             <div class="user-info">elnathanwebsite</div>
         </div>
     </div>
 
     <div class="order-list">
         <h1><i class="fas fa-shipping-fast"></i> Perlu Dikirim</h1>
+        <button onclick="window.print()" class="print-button no-print">
+            <i class="fas fa-print"></i> Cetak Semua
+        </button>
         <div id="orders"></div>
     </div>
 
@@ -162,39 +143,30 @@
         const app = initializeApp(firebaseConfig);
         const database = getDatabase(app);
 
-        // Copy phone number function
-        window.copyPhoneNumber = function(phone) {
-            const tempInput = document.createElement('input');
-            tempInput.value = phone;
-            document.body.appendChild(tempInput);
-            tempInput.select();
-            document.execCommand('copy');
-            document.body.removeChild(tempInput);
-
-            // Show feedback
-            const feedback = document.getElementById(`copy-feedback-${phone}`);
-            feedback.style.opacity = '1';
-            setTimeout(() => {
-                feedback.style.opacity = '0';
-            }, 2000);
+        // Copy to keyboard function
+        window.copyToKeyboard = function(phoneNumber) {
+            navigator.clipboard.writeText(phoneNumber).then(() => {
+                const messageId = `copy-message-${phoneNumber}`;
+                const messageElement = document.getElementById(messageId);
+                messageElement.style.display = 'inline';
+                setTimeout(() => {
+                    messageElement.style.display = 'none';
+                }, 2000);
+            });
         };
 
         // Print single order function
-        window.printOrder = function(orderId) {
+        window.printSingleOrder = function(orderId) {
             const orderElement = document.getElementById(`order-${orderId}`);
-            const allOrders = document.querySelectorAll('.order');
-            
-            allOrders.forEach(order => {
-                order.classList.remove('print-selected');
-            });
-            
-            orderElement.classList.add('print-selected');
+            const originalContents = document.body.innerHTML;
+            document.body.innerHTML = orderElement.innerHTML;
             window.print();
-            orderElement.classList.remove('print-selected');
+            document.body.innerHTML = originalContents;
+            location.reload();
         };
 
         function updateDateTime() {
-            document.getElementById('datetime').textContent = "2025-02-17 14:06:32";
+            document.getElementById('datetime').textContent = "2025-02-17 14:13:27";
         }
 
         const ordersRef = ref(database, 'orders');
@@ -209,35 +181,39 @@
                     orderElement.className = 'order';
                     orderElement.id = `order-${orderId}`;
                     
-                    let productsHTML = '<ul class="product-list">';
-                    if (order.products && Array.isArray(order.products)) {
+                    // Generate product list HTML
+                    let productHTML = '<ul class="product-list">';
+                    if (Array.isArray(order.products)) {
                         order.products.forEach(product => {
-                            productsHTML += `
+                            productHTML += `
                                 <li class="product-item">
                                     ${product.name} - ${product.quantity} pcs
-                                    <span>Rp ${product.price.toLocaleString()}</span>
+                                    <span style="float: right;">Rp ${product.price.toLocaleString()}</span>
                                 </li>`;
                         });
+                    } else {
+                        productHTML += `
+                            <li class="product-item">
+                                ${order.product} - ${order.quantity} pcs
+                            </li>`;
                     }
-                    productsHTML += '</ul>';
+                    productHTML += '</ul>';
 
                     orderElement.innerHTML = `
-                        <div class="order-header">
-                            <button class="print-button no-print" onclick="printOrder('${orderId}')">
-                                <i class="fas fa-print"></i> Cetak Pesanan
-                            </button>
-                        </div>
+                        <button class="print-button no-print" onclick="printSingleOrder('${orderId}')">
+                            <i class="fas fa-print"></i> Cetak Pesanan Ini
+                        </button>
                         <h3><i class="fas fa-user order-icon"></i> Pesanan oleh: ${order.name}</h3>
                         <p><i class="fas fa-map-marker-alt order-icon"></i> Alamat: ${order.address}</p>
                         <p>
                             <i class="fas fa-phone order-icon"></i> Nomor Telepon: ${order.phone}
-                            <button class="phone-button no-print" onclick="copyPhoneNumber('${order.phone}')">
-                                <i class="fas fa-copy"></i> Salin
+                            <button class="phone-button no-print" onclick="copyToKeyboard('${order.phone}')">
+                                <i class="fas fa-keyboard"></i> Salin ke Keyboard
                             </button>
-                            <span id="copy-feedback-${order.phone}" class="copy-feedback">✓ Tersalin!</span>
+                            <span id="copy-message-${order.phone}" class="copy-message">✓ Tersalin!</span>
                         </p>
-                        <h4>Produk:</h4>
-                        ${productsHTML}
+                        <h4><i class="fas fa-shopping-cart order-icon"></i> Produk:</h4>
+                        ${productHTML}
                     `;
                     ordersContainer.appendChild(orderElement);
                 });
