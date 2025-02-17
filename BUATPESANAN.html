@@ -30,7 +30,7 @@
             margin: 0;
             padding: 0;
             min-height: 100vh;
-            background: linear-gradient(-45deg, #ff4e00, #000000, #ff0000);
+            background: linear-gradient(-45deg, #ff0000, #000000, #ff0000);
             background-size: 400% 400%;
             animation: gradient 15s ease infinite;
             color: white;
@@ -147,30 +147,12 @@
             80%, 100% { content: ""; }
         }
     </style>
-</head>
-<body>
-    <div class="header-info">
-        <div class="datetime" id="datetime"></div>
-        <div class="user-info" id="userInfo"></div>
-    </div>
-
-    <h2>Form Pemesanan</h2>
-    <form id="orderForm">
-        <input type="text" id="name" placeholder="Nama Anda" required>
-        <input type="text" id="address" placeholder="Cari lokasi..." required>
-        <button type="button" onclick="enableLocationSelection()">Pilih Lokasi di Peta</button>
-        <div id="map"></div>
-        <input type="text" id="phone" placeholder="Nomor Telepon" required>
-        <button type="submit">Kirim Pesanan</button>
-    </form>
-    <div id="loadingOverlay">Mengirim pesanan</div>
-
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-app.js";
         import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-database.js";
 
         const firebaseConfig = {
-            apiKey: "AIzaSyDXxVMHR14C2QXq8tzcm2TA5q6AReIyESM",
+             apiKey: "AIzaSyDXxVMHR14C2QXq8tzcm2TA5q6AReIyESM",
             authDomain: "ethteam-66c6e.firebaseapp.com",
             projectId: "ethteam-66c6e",
             storageBucket: "ethteam-66c6e.appspot.com",
@@ -182,7 +164,7 @@
 
         const app = initializeApp(firebaseConfig);
         const database = getDatabase(app);
-  
+
         let map = L.map('map').setView([-6.200000, 106.816666], 13);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; OpenStreetMap contributors'
@@ -199,8 +181,6 @@
                 try {
                     let response = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${e.latlng.lat}&lon=${e.latlng.lng}&format=json`);
                     let data = await response.json();
-                    console.log(data);
-
                     if (data && data.display_name) {
                         document.getElementById('address').value = data.display_name;
                     } else {
@@ -213,15 +193,15 @@
             });
         }
 
-        const orderForm = document.getElementById('orderForm');
-        const loadingOverlay = document.getElementById('loadingOverlay');
-
-        orderForm.addEventListener('submit', function(event) {
+        document.getElementById('orderForm').addEventListener('submit', function(event) {
             event.preventDefault();
+            document.getElementById('loadingOverlay').style.display = 'flex';
 
             const name = document.getElementById('name').value;
             const address = document.getElementById('address').value;
             const phone = document.getElementById('phone').value;
+            const product = document.getElementById('product').value;
+            const quantity = document.getElementById('quantity').value;
 
             const ordersRef = ref(database, 'orders');
             const newOrderRef = push(ordersRef);
@@ -229,32 +209,48 @@
             set(newOrderRef, {
                 name: name,
                 address: address,
-                phone: phone
+                phone: phone,
+                product: product,
+                quantity: quantity,
+                timestamp: new Date().toISOString()
             }).then(() => {
-                alert("Pesanan berhasil dikirim!");
-                loadingOverlay.style.display = 'flex';
-                setTimeout(() => {
-                    window.location.href = "TQOREDER.html";
-                }, 3000);
-            }).catch((error) => {
-                console.error("Terjadi kesalahan:", error);
-                alert("Gagal mengirim pesanan. Coba lagi.");
+                document.getElementById('loadingOverlay').style.display = 'none';
+                alert('Pesanan berhasil dikirim!');
+                
+                // Redirect ke halaman TQORDER.html setelah data berhasil dikirim
+                window.location.href = 'TQOREDER.html'; 
+            }).catch(error => {
+                console.error("Error submitting order:", error);
+                document.getElementById('loadingOverlay').style.display = 'none';
+                alert('Terjadi kesalahan, coba lagi!');
             });
         });
+    </script>
+</head>
+<body>
+    <div class="header-info">
+        <div class="datetime">Tanggal: <span id="current-date"></span></div>
+        <div class="user-info">Selamat datang, <span id="user-name">User</span></div>
+    </div>
+    <h2>Form Pemesanan</h2>
+    <form id="orderForm">
+        <input type="text" id="name" placeholder="Nama Anda" required>
+        <input type="text" id="address" placeholder="Cari lokasi..." required>
+        <button type="button" onclick="enableLocationSelection()">Pilih Lokasi di Peta</button>
+        <div id="map" style="height: 300px; width: 100%; margin: 15px 0;"></div>
+        <input type="text" id="phone" placeholder="Nomor Telepon" required>
+        <input type="text" id="product" placeholder="Produk" required>
+        <input type="number" id="quantity" placeholder="Jumlah" required>
+        <button type="submit">Kirim Pesanan</button>
+    </form>
 
-        // Update datetime display
-        function updateDateTime() {
-            const now = new Date();
-            const formattedDateTime = now.toISOString().slice(0, 19).replace('T', ' ');
-            document.getElementById('datetime').textContent = formattedDateTime;
-        }
+    <div id="loadingOverlay">
+        <div>Memproses pesanan<span id="loadingDots">...</span></div>
+    </div>
 
-        // Update user info display
-        document.getElementById('userInfo').textContent = 'User: elnathanwebsite';
-
-        // Update time every second
-        updateDateTime();
-        setInterval(updateDateTime, 1000);
+    <script>
+        // Tampilkan tanggal saat ini
+        document.getElementById('current-date').textContent = new Date().toLocaleDateString('id-ID');
     </script>
 </body>
 </html>
