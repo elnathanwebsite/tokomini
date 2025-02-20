@@ -71,34 +71,56 @@
     </div>
     
     <script>
-        document.getElementById('loginForm').addEventListener('submit', async function(event) {
-            event.preventDefault();
-            document.getElementById('loading').style.display = 'block';
-            document.getElementById('message').textContent = '';
+        document.getElementById("loginForm").addEventListener("submit", function(event) {
+            event.preventDefault(); // Mencegah reload halaman
             
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            
-            try {
-                const response = await fetch('/api/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password })
+            let usernameInput = document.getElementById("username").value;
+            let passwordInput = document.getElementById("password").value;
+            let message = document.getElementById("message");
+            let loading = document.getElementById("loading");
+
+            loading.style.display = "block"; // Tampilkan "Memeriksa..."
+            message.innerText = ""; // Kosongkan pesan error sebelumnya
+
+            fetch('https://datapswordmiket-bs78.vercel.app/LOGINPEMILIK.js')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Gagal mengambil data dari server.");
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("Data dari API:", data);
+
+                    // Pastikan API memiliki format yang benar
+                    if (data.username && data.password) {
+                        if (usernameInput === data.username && passwordInput === data.password) {
+                            message.style.color = "green";
+                            message.innerText = "Login berhasil!";
+
+                            // Simpan sesi login di LocalStorage
+                            localStorage.setItem("isLoggedIn", "true");
+
+                            // Redirect ke halaman lain (misalnya dashboard)
+                            setTimeout(() => {
+                                window.location.href = "dashboard.html";
+                            }, 1500);
+                        } else {
+                            message.innerText = "Username atau password salah!";
+                        }
+                    } else {
+                        message.innerText = "Format data API tidak valid!";
+                    }
+                })
+                .catch(error => {
+                    console.error("Gagal mengambil data:", error);
+                    message.innerText = "Terjadi kesalahan saat menghubungi server.";
+                })
+                .finally(() => {
+                    loading.style.display = "none"; // Sembunyikan "Memeriksa..."
                 });
-                
-                const result = await response.json();
-                if (result.success) {
-                    window.location.href = '/dashboard';
-                } else {
-                    document.getElementById('message').textContent = result.message;
-                }
-            } catch (error) {
-                document.getElementById('message').textContent = 'Gagal memproses login.';
-            } finally {
-                document.getElementById('loading').style.display = 'none';
-            }
         });
-        
     </script>
+    
 </body>
 </html>
