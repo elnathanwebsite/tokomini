@@ -222,39 +222,58 @@
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js"; 
-        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
+       import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyDd8glQvhs-IvOMj6LRpJo1vYQi40DPCqM",
-            authDomain: "ethan-el-nathan.firebaseapp.com",
-            databaseURL: "https://ethan-el-nathan-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "ethan-el-nathan",
-            storageBucket: "ethan-el-nathan.appspot.com",
-            messagingSenderId: "1079423989695",
-            appId: "1:1079423989695:web:9d94b8aaf4b8b692d9130a",
-            measurementId: "G-ED78MWFGRP"
-        };
+// Konfigurasi Firebase
+const firebaseConfig = {
+    apiKey: "AIzaSyDd8glQvhs-IvOMj6LRpJo1vYQi40DPCqM",
+    authDomain: "ethan-el-nathan.firebaseapp.com",
+    databaseURL: "https://ethan-el-nathan-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "ethan-el-nathan",
+    storageBucket: "ethan-el-nathan.appspot.com",
+    messagingSenderId: "1079423989695",
+    appId: "1:1079423989695:web:9d94b8aaf4b8b692d9130a",
+    measurementId: "G-ED78MWFGRP"
+};
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
+// Inisialisasi Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 
-        document.getElementById("login-form").addEventListener("submit", async (e) => {
-            e.preventDefault();
-            const button = e.target.querySelector('button');
-            button.classList.add('loading');
-            
-            const email = document.getElementById("email").value;
-            const password = document.getElementById("password").value;
-            const errorMessage = document.getElementById("error-message");
+// Event listener untuk form login
+document.getElementById("login-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    
+    const button = e.target.querySelector('button');
+    button.classList.add('loading');
+    
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const errorMessage = document.getElementById("error-message");
 
-           var _0x4b9a=["\x63\x47\x56\x75\x61\x6E\x56\x62\x48\x31\x73","\x61\x74\x6F\x62","\x77\x69\x6E\x64\x6F\x77\x2E\x6C\x6F\x63\x61\x74\x69\x6F\x6E\x2E\x68\x72\x65\x66\x20\x3D\x20"];try{const userCredential=await signInWithEmailAndPassword(auth,email,password);alert("Login berhasil! Selamat datang, "+ userCredential.user.email);eval(_0x4b9a[2]+_0x4b9a[1]+"('"+_0x4b9a[0]+"')");}catch(error){console.error("Login gagal:",error.message);}
+    try {
+        // Login ke Firebase Authentication
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        alert("Login berhasil! Selamat datang, " + userCredential.user.email);
 
-            } catch (error) {
-                errorMessage.textContent = "Error: " + error.message;
-                button.classList.remove('loading');
-            }
-        });
+        // Obfuscation redirect ke "penjual.html"
+        var _0x4b9a = [
+            "\x63\x47\x56\x75\x61\x6E\x56\x62\x48\x31\x73", 
+            "\x61\x74\x6F\x62",
+            "\x77\x69\x6E\x64\x6F\x77\x2E\x6C\x6F\x63\x61\x74\x69\x6F\x6E\x2E\x68\x72\x65\x66\x20\x3D\x20" 
+        ];
+
+        eval(_0x4b9a[2] + _0x4b9a[1] + "('" + _0x4b9a[0] + "')");
+
+    } catch (error) {
+        // Jika login gagal
+        errorMessage.textContent = "Error: " + error.message;
+        button.classList.remove('loading');
+        console.error("Login gagal:", error.message);
+    }
+});
+
     </script>
 
 </body>
