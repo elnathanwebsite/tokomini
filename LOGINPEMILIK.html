@@ -251,7 +251,7 @@
             try {
                 const userCredential = await signInWithEmailAndPassword(auth, email, password);
                 alert("Login berhasil! Selamat datang, " + userCredential.user.email);
-                window.location.href = "penjual.html";
+                window.location.href = "LOGINPEMILIK.html";
             } catch (error) {
                 errorMessage.textContent = "Error: " + error.message;
                 button.classList.remove('loading');
