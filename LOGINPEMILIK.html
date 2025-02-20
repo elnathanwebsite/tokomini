@@ -5,39 +5,203 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #f4f4f4;
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
-        .container {
-            margin-top: 100px;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            display: inline-block;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #1a1a1a;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            position: relative;
+            overflow: hidden;
         }
-        input {
-            display: block;
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
             width: 100%;
-            margin: 10px 0;
-            padding: 10px;
-            font-size: 16px;
+            height: 100%;
+            background: linear-gradient(45deg, #ff6b00, #ff8800);
+            transform: rotate(-45deg);
+            z-index: 0;
+            animation: glowPulse 8s infinite;
         }
+
+        @keyframes glowPulse {
+            0% { opacity: 0.5; }
+            50% { opacity: 0.7; }
+            100% { opacity: 0.5; }
+        }
+
+        .container {
+            position: relative;
+            background: rgba(25, 25, 25, 0.95);
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2),
+                        0 0 20px rgba(255, 107, 0, 0.1);
+            width: 100%;
+            max-width: 420px;
+            z-index: 1;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 107, 0, 0.1);
+            transform: translateY(0);
+            transition: all 0.3s ease;
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3),
+                        0 0 30px rgba(255, 107, 0, 0.2);
+        }
+
+        h1 {
+            color: #ff6b00;
+            margin-bottom: 2rem;
+            font-size: 2.2rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #333;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #2d2d2d;
+            color: #fff;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        input:focus {
+            border-color: #ff6b00;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(255, 107, 0, 0.1);
+        }
+
+        input::placeholder {
+            color: #666;
+        }
+
         button {
-            background: blue;
+            background: linear-gradient(45deg, #ff6b00, #ff8800);
             color: white;
-            padding: 10px;
+            padding: 15px;
             border: none;
+            border-radius: 10px;
             cursor: pointer;
             width: 100%;
-            font-size: 16px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            position: relative;
+            overflow: hidden;
         }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.2),
+                transparent
+            );
+            transition: 0.5s;
+        }
+
+        button:hover::before {
+            left: 100%;
+        }
+
         button:hover {
-            background: darkblue;
+            background: linear-gradient(45deg, #ff8800, #ff6b00);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 0, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        #error-message {
+            color: #ff4444;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        /* Loading animation */
+        button.loading {
+            position: relative;
+            color: transparent;
+        }
+
+        button.loading::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 24px;
+            height: 24px;
+            margin: -12px 0 0 -12px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 480px) {
+            .container {
+                margin: 1rem;
+                padding: 2rem;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            input {
+                padding: 12px;
+            }
         }
     </style>
 </head>
@@ -46,11 +210,15 @@
     <div class="container">
         <h1>Login</h1>
         <form id="login-form">
-            <input type="email" id="email" placeholder="Email" required>
-            <input type="password" id="password" placeholder="Password" required>
+            <div class="input-group">
+                <input type="email" id="email" placeholder="Email" required>
+            </div>
+            <div class="input-group">
+                <input type="password" id="password" placeholder="Password" required>
+            </div>
             <button type="submit">Login</button>
         </form>
-        <p id="error-message" style="color: red;"></p>
+        <p id="error-message"></p>
     </div>
 
     <script type="module">
@@ -73,6 +241,9 @@
 
         document.getElementById("login-form").addEventListener("submit", async (e) => {
             e.preventDefault();
+            const button = e.target.querySelector('button');
+            button.classList.add('loading');
+            
             const email = document.getElementById("email").value;
             const password = document.getElementById("password").value;
             const errorMessage = document.getElementById("error-message");
@@ -80,11 +251,10 @@
             try {
                 const userCredential = await signInWithEmailAndPassword(auth, email, password);
                 alert("Login berhasil! Selamat datang, " + userCredential.user.email);
-                
-                // Redirect ke halaman dashboard setelah login sukses
                 window.location.href = "penjual.html";
             } catch (error) {
                 errorMessage.textContent = "Error: " + error.message;
+                button.classList.remove('loading');
             }
         });
     </script>
