@@ -1,255 +1,104 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Toko</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Login Pemilik</title>
     <style>
-        :root {
-            --primary-gradient: linear-gradient(120deg, #1d3557, #457b9d);
-            --accent-color: #f4a261;
-            --error-color: #e63946;
-            --text-white: #ffffff;
-            --input-bg: #e5e5e5;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
-
         body {
-            margin: 0;
-            padding: 0;
-            background: var(--primary-gradient);
+            font-family: Arial, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            color: var(--text-white);
+            height: 100vh;
+            background-color: #f4f4f4;
         }
-
         .login-container {
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            padding: 40px;
-            width: 90%;
-            max-width: 400px;
-            text-align: center;
-            animation: fadeIn 0.5s ease;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
         }
-
-        .datetime-display {
-            font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.7);
-            margin-bottom: 20px;
-        }
-
-        .user-info {
-            font-size: 0.8rem;
-            color: var(--accent-color);
-            margin-bottom: 30px;
-        }
-
-        h1 {
-            margin-bottom: 30px;
-            font-size: 2rem;
-            color: var(--accent-color);
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-
         .input-group {
-            position: relative;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
-
-        .input-group i {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #666;
+        .input-group label {
+            display: block;
+            font-weight: bold;
         }
-
-        input {
+        .input-group input {
             width: 100%;
-            padding: 15px 15px 15px 45px;
-            border: none;
-            border-radius: 10px;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            background: var(--input-bg);
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
         }
-
-        input:focus {
-            outline: none;
-            box-shadow: 0 0 0 2px var(--accent-color);
-        }
-
-        .submit-btn {
-            background: var(--accent-color);
+        .btn-login {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
             color: white;
-            font-weight: 600;
-            cursor: pointer;
-            padding: 15px;
             border: none;
-            border-radius: 10px;
-            width: 100%;
-            font-size: 1rem;
-            transition: all 0.3s ease;
+            border-radius: 4px;
+            cursor: pointer;
         }
-
-        .submit-btn:hover {
-            background: #e76f51;
-            transform: translateY(-2px);
+        .btn-login:hover {
+            background-color: #0056b3;
         }
-
-        .error {
-            color: var(--error-color);
-            font-size: 0.9rem;
-            margin-top: 15px;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .error.visible {
-            opacity: 1;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .loading {
+        #loading {
             display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid var(--accent-color);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            text-align: center;
+            margin-top: 10px;
         }
     </style>
 </head>
-<link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
-<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-<link rel="shortcut icon" href="/favicon.ico" />
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-<link rel="manifest" href="/site.webmanifest" />
 <body>
     <div class="login-container">
-        <div class="datetime-display" id="datetime">2025-01-31 13:22:17</div>
-        <div class="user-info">elnathanwebsite</div>
-        <h1>Login Toko</h1>
+        <h2>Login Pemilik</h2>
         <form id="loginForm">
             <div class="input-group">
-                <i class="fas fa-store"></i>
-                <input type="text" id="storeName" placeholder="Nama Toko" required>
+                <label for="username">Username</label>
+                <input type="text" id="username" required>
             </div>
             <div class="input-group">
-                <i class="fas fa-lock"></i>
-                <input type="password" id="password" placeholder="Sandi" required>
+                <label for="password">Password</label>
+                <input type="password" id="password" required>
             </div>
-            <button type="submit" class="submit-btn">
-                <i class="fas fa-sign-in-alt"></i> Login
-            </button>
-            <p id="errorMessage" class="error"></p>
+            <button type="submit" class="btn-login">Login</button>
         </form>
+        <div id="loading">Memeriksa...</div>
+        <p id="message" style="color: red; text-align: center;"></p>
     </div>
-
-    <div class="loading" id="loading">
-        <div class="spinner"></div>
-    </div>
-
+    
     <script>
-        // Constants WEB DALAM MASA UJI COBA DAN BELUM DI AUTENTIKASI, JADI SANDINYA DI BAWAH
-        const correctStoreName = "MIKET";
-        const correctPassword = atob("VE9LT01JTkkgQVJJRkFO"); 
-      const _0xabc=["\x70\x65\x6E\x6A\x75\x61\x6C\x2E\x68\x74\x6D\x6C"]; 
-window.location.href=_0xabc[0];
-
-
-        // Update datetime
-        function updateDateTime() {
-            const now = new Date();
-            const formatted = now.toISOString().replace('T', ' ').substring(0, 19);
-            document.getElementById('datetime').textContent = formatted;
-        }
-
-        setInterval(updateDateTime, 1000);
-        updateDateTime();
-
-        // Show/Hide loading
-        function toggleLoading(show) {
-            const loading = document.getElementById('loading');
-            loading.style.display = show ? 'flex' : 'none';
-        }
-
-        // Show error message
-        function showError(message) {
-            const errorMessage = document.getElementById('errorMessage');
-            errorMessage.textContent = message;
-            errorMessage.classList.add('visible');
+        document.getElementById('loginForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('message').textContent = '';
             
-            setTimeout(() => {
-                errorMessage.classList.remove('visible');
-            }, 3000);
-        }
-
-        // Handle form submission
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            const storeName = document.getElementById('storeName').value.trim();
+            const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
-
-            toggleLoading(true);
-
-            setTimeout(() => {
-                if (storeName === correctStoreName && password === correctPassword) {
-                    localStorage.setItem('isLoggedIn', 'true');
-                    window.location.href = redirectPage;
+            
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    window.location.href = '/dashboard';
                 } else {
-                    toggleLoading(false);
-                    showError('Nama toko atau sandi salah!');
+                    document.getElementById('message').textContent = result.message;
                 }
-            }, 1000);
+            } catch (error) {
+                document.getElementById('message').textContent = 'Gagal memproses login.';
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+            }
         });
-
-        // Check if already logged in
-        if (localStorage.getItem('isLoggedIn') === 'true') {
-            window.location.href = redirectPage;
-        }
+        
     </script>
 </body>
 </html>
