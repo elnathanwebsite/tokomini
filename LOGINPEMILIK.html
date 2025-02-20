@@ -222,7 +222,7 @@
     </div>
 
     <script type="module">
-       import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
 
 // Konfigurasi Firebase
@@ -257,22 +257,24 @@ document.getElementById("login-form").addEventListener("submit", async (e) => {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         alert("Login berhasil! Selamat datang, " + userCredential.user.email);
 
-        // Obfuscation redirect ke "penjual.html"
-        var _0x4b9a = [
-            "\x63\x47\x56\x75\x61\x6E\x56\x62\x48\x31\x73", 
-            "\x61\x74\x6F\x62",
-            "\x77\x69\x6E\x64\x6F\x77\x2E\x6C\x6F\x63\x61\x74\x69\x6F\x6E\x2E\x68\x72\x65\x66\x20\x3D\x20" 
-        ];
+        // Simpan status login di sessionStorage
+        sessionStorage.setItem("loggedIn", "true");
 
-        eval(_0x4b9a[2] + _0x4b9a[1] + "('" + _0x4b9a[0] + "')");
+        // Redirect
+        window.location.href = "penjual.html";
 
     } catch (error) {
-        // Jika login gagal
         errorMessage.textContent = "Error: " + error.message;
         button.classList.remove('loading');
         console.error("Login gagal:", error.message);
     }
 });
+
+// Cegah akses langsung ke "penjual.html" tanpa login
+if (window.location.pathname.includes("penjual.html") && sessionStorage.getItem("loggedIn") !== "true") {
+    window.location.href = "login.html"; // Redirect ke login jika belum login
+}
+
 
     </script>
 
