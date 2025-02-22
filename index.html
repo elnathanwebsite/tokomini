@@ -8,483 +8,374 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root {
-            --primary-black: #0a0a0a;
-            --primary-orange: #ff6b2b;
-            --primary-red: #e31837;
-            --accent-gray: #1a1a1a;
-            --text-white: #ffffff;
-            --neon-glow: 0 0 10px rgba(255, 107, 43, 0.5),
-                         0 0 20px rgba(255, 107, 43, 0.3),
-                         0 0 30px rgba(255, 107, 43, 0.1);
-        }
-
-        * {
+        body {
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        body {
-            background: linear-gradient(135deg, var(--primary-black) 0%, var(--accent-gray) 100%);
-            color: var(--text-white);
+            display: flex;
+            justify-content: center;
+            align-items: center;
             min-height: 100vh;
-            position: relative;
-            overflow-x: hidden;
+            background-color: #0a0a0a;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
         }
 
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
+        .loading-container {
+            text-align: center;
+            position: relative;
+        }
+
+        .fire-loading {
+            position: relative;
+            width: 250px;
+            height: 250px;
+            margin: 0 auto;
+            transform: scale(1.2);
+        }
+
+        .fire-core {
+            position: absolute;
+            bottom: 40px;
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle at 60% 40%, 
+                #ffffff 0%,
+                #ffd700 30%,
+                #ff4d00 48%,
+                transparent 100%);
+            border-radius: 50%;
+            box-shadow: 
+                0 0 80px 20px #ff4d00,
+                0 0 120px 30px #ff7700,
+                0 -20px 150px 40px #ff4400;
+            animation: glow 1.5s infinite;
+            left: 50%;
+            transform: translateX(-50%);
+            filter: blur(2px);
+            z-index: 2;
+        }
+
+        .flames-wrapper {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 180px;
+            height: 180px;
+            perspective: 100px;
+        }
+
+        .flames {
+            position: absolute;
+            bottom: 0;
             width: 100%;
             height: 100%;
-            background: 
-                radial-gradient(circle at 20% 20%, rgba(255, 107, 43, 0.1) 0%, transparent 40%),
-                radial-gradient(circle at 80% 80%, rgba(227, 24, 55, 0.1) 0%, transparent 40%);
-            pointer-events: none;
+            transform-style: preserve-3d;
         }
 
-        /* Modern Header */
-        .header {
-            background: rgba(10, 10, 10, 0.95);
-            backdrop-filter: blur(10px);
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-            border-bottom: 1px solid rgba(255, 107, 43, 0.3);
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
-        }
-
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 30px;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .logo-section {
-            display: flex;
-            align-items: center;
-            gap: 30px;
-        }
-
-        .datetime-display {
-            font-family: 'Orbitron', sans-serif;
-            color: var(--primary-orange);
-            font-size: 0.9rem;
-            padding: 8px 15px;
-            background: rgba(255, 107, 43, 0.1);
-            border-radius: 20px;
-            border: 1px solid rgba(255, 107, 43, 0.2);
-            text-shadow: var(--neon-glow);
-        }
-
-        .user-info {
-            font-size: 0.85rem;
-            color: var(--text-white);
-            opacity: 0.8;
-        }
-
-        .logo {
-            font-size: 2.2rem;
-            font-weight: 700;
-            background: linear-gradient(45deg, var(--primary-orange), var(--primary-red));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: var(--neon-glow);
-            letter-spacing: 2px;
-        }
-
-        .menu-icon {
-            font-size: 1.8rem;
-            cursor: pointer;
-            color: var(--primary-orange);
-            transition: all 0.3s ease;
-            width: 50px;
-            height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            background: rgba(255, 107, 43, 0.1);
-            border: 1px solid rgba(255, 107, 43, 0.2);
-        }
-
-        .menu-icon:hover {
-            transform: rotate(90deg);
-            background: rgba(255, 107, 43, 0.2);
-            box-shadow: var(--neon-glow);
-        }
-
-        /* Enhanced Sidebar */
-        .sidebar {
-            position: fixed;
-            top: 0;
-            right: -300px;
-            width: 300px;
-            height: 100vh;
-            background: rgba(10, 10, 10, 0.98);
-            backdrop-filter: blur(15px);
-            z-index: 1001;
-            padding-top: 80px;
-            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border-left: 1px solid rgba(255, 107, 43, 0.3);
-            box-shadow: -5px 0 30px rgba(0, 0, 0, 0.5);
-        }
-
-        .sidebar.active {
-            right: 0;
-        }
-
-        .close-btn {
+        .flame {
             position: absolute;
-            top: 20px;
-            right: 20px;
-            font-size: 24px;
-            color: var(--primary-orange);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            bottom: 0;
+            width: 35px;
+            height: var(--height, 120px);
+            background: linear-gradient(to top, 
+                rgba(255, 77, 0, 0) 0%,
+                rgba(255, 119, 0, 0.6) 30%,
+                rgba(255, 174, 0, 0.8) 60%,
+                rgba(255, 238, 0, 0.2) 100%);
+            border-radius: 50% 50% 20% 20%;
+            transform-origin: 50% 100%;
+            animation: burn 2s infinite;
+            filter: blur(2px);
+            z-index: 1;
+        }
+
+        .spark {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background-color: #ffd700;
             border-radius: 50%;
-            background: rgba(255, 107, 43, 0.1);
-            border: 1px solid rgba(255, 107, 43, 0.2);
+            animation: spark linear infinite;
+            opacity: 0;
         }
 
-        .close-btn:hover {
-            transform: rotate(90deg);
-            background: rgba(255, 107, 43, 0.2);
-            box-shadow: var(--neon-glow);
+        .counter {
+            font-size: 72px;
+            font-weight: bold;
+            background: linear-gradient(to bottom, #ffd700, #ff4d00);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 20px rgba(255, 119, 0, 0.5);
+            margin: 20px 0;
+            filter: drop-shadow(0 0 10px rgba(255, 77, 0, 0.3));
         }
 
-        .sidebar a {
-            display: flex;
-            align-items: center;
-            padding: 15px 30px;
-            color: var(--text-white);
-            text-decoration: none;
-            font-size: 1.1rem;
-            transition: all 0.3s ease;
-            margin: 5px 15px;
-            border-radius: 12px;
-        }
-
-        .sidebar a i {
-            margin-right: 10px;
-            width: 24px;
-            text-align: center;
-        }
-
-        .sidebar a:hover {
-            background: rgba(255, 107, 43, 0.1);
-            transform: translateX(5px);
-            box-shadow: var(--neon-glow);
-        }
-
-        /* Enhanced Product Grid */
-        .main-content {
-            margin-top: 100px;
-            padding: 20px;
-        }
-
-        .product-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 30px;
-            padding: 20px;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .product-card {
-            background: rgba(26, 26, 26, 0.8);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            overflow: hidden;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 1px solid rgba(255, 107, 43, 0.1);
-            animation: fadeInUp 0.6s ease-out forwards;
+        .progress-container {
             position: relative;
+            width: 400px;
+            height: 20px;
+            background: rgba(255, 77, 0, 0.1);
+            border-radius: 10px;
+            margin: 20px auto;
+            overflow: hidden;
+            box-shadow: 
+                inset 0 0 10px rgba(0, 0, 0, 0.5),
+                0 0 20px rgba(255, 77, 0, 0.3);
         }
 
-        .product-card::before {
+        .progress-bar {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                #ff4d00,
+                #ff7700,
+                #ffd700,
+                #ff7700,
+                #ff4d00);
+            background-size: 200% 100%;
+            width: 0%;
+            transition: width 0.05s linear;
+            animation: gradient 2s linear infinite;
+        }
+
+        .redirect-button {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease-out;
+            margin-top: 20px;
+            background: linear-gradient(45deg, #ff4d00, #ff7700, #ffd700);
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(255, 77, 0, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .redirect-button::before {
             content: '';
             position: absolute;
             top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            border-radius: 20px;
-            background: linear-gradient(45deg, 
-                rgba(255, 107, 43, 0.1), 
-                rgba(227, 24, 55, 0.1));
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent,
+                rgba(255, 255, 255, 0.2),
+                transparent);
+            transition: 0.5s;
+        }
+
+        .redirect-button:hover::before {
+            left: 100%;
+        }
+
+        .redirect-button.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .redirect-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 77, 0, 0.6);
+        }
+
+        .redirect-button:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 10px rgba(255, 77, 0, 0.4);
+        }
+
+        .completion-message {
+            color: #ffd700;
+            font-size: 32px;
+            margin: 20px 0;
             opacity: 0;
-            transition: 0.3s ease;
+            transition: opacity 0.5s ease-in-out;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
         }
 
-        .product-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 10px 30px rgba(255, 107, 43, 0.2);
-            border-color: rgba(255, 107, 43, 0.3);
-        }
-
-        .product-card:hover::before {
+        .completion-message.show {
             opacity: 1;
         }
 
-        .product-image {
-            width: 100%;
-            height: 250px;
-            object-fit: cover;
-            transition: all 0.5s ease;
-        }
-
-        .product-card:hover .product-image {
-            transform: scale(1.05);
-        }
-
-        .product-details {
-            padding: 25px;
-            position: relative;
-        }
-
-        .product-name {
-            font-size: 1.4rem;
-            color: var(--primary-orange);
-            margin-bottom: 15px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-        }
-
-        .product-price {
-            display: inline-block;
-            background: linear-gradient(45deg, var(--primary-orange), var(--primary-red));
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-weight: 600;
-            font-size: 1.1rem;
-            margin: 15px 0;
-        }
-
-        .button-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
+        .user-info {
             margin-top: 20px;
+            font-size: 16px;
+            color: #ff7700;
+            text-shadow: 0 0 10px rgba(255, 119, 0, 0.3);
         }
 
-        .btn {
-            padding: 12px;
-            border-radius: 12px;
-            text-decoration: none;
-            font-weight: 600;
-            text-align: center;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            border: 1px solid rgba(255, 107, 43, 0.2);
+        .user-info .username {
+            color: #ffd700;
+            font-weight: bold;
+            font-size: 18px;
         }
 
-        .btn-primary {
-            background: var(--primary-orange);
-            color: white;
+        .user-info .datetime {
+            color: #ff4d00;
+            font-family: monospace;
+            font-size: 16px;
         }
 
-        .btn-secondary {
-            background: var(--primary-red);
-            color: white;
-        }
-
-        .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--neon-glow);
-        }
-
-        /* Enhanced Animations */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
+        @keyframes burn {
+            0% {
+                height: var(--height);
+                transform: translateY(0) rotate(var(--rotate)) scale(1);
             }
-            to {
+            50% {
+                height: calc(var(--height) * 1.2);
+                transform: translateY(-10px) rotate(calc(var(--rotate) * -1)) scale(1.1);
+            }
+            100% {
+                height: var(--height);
+                transform: translateY(0) rotate(var(--rotate)) scale(1);
+            }
+        }
+
+        @keyframes spark {
+            0% {
+                transform: translate(0, 0) scale(1);
                 opacity: 1;
-                transform: translateY(0);
+            }
+            100% {
+                transform: translate(var(--tx), var(--ty)) scale(0);
+                opacity: 0;
             }
         }
 
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .datetime-display {
-                display: none;
+        @keyframes glow {
+            0%, 100% {
+                box-shadow: 
+                    0 0 80px 20px #ff4d00,
+                    0 0 120px 30px #ff7700,
+                    0 -20px 150px 40px #ff4400;
             }
-
-            .header-content {
-                padding: 15px 20px;
-            }
-
-            .logo {
-                font-size: 1.8rem;
-            }
-
-            .product-grid {
-                grid-template-columns: 1fr;
-                gap: 20px;
-                padding: 15px;
+            50% {
+                box-shadow: 
+                    0 0 100px 30px #ff4d00,
+                    0 0 150px 40px #ff7700,
+                    0 -20px 200px 50px #ff4400;
             }
         }
 
-        @media (max-width: 480px) {
-            .button-container {
-                grid-template-columns: 1fr;
-            }
+        @keyframes gradient {
+            0% { background-position: 100% 0%; }
+            100% { background-position: -100% 0%; }
+        }
 
-            .product-details {
-                padding: 20px;
-            }
-
-            .product-name {
-                font-size: 1.2rem;
-            }
+        @keyframes buttonGlow {
+            0% { box-shadow: 0 5px 15px rgba(255, 77, 0, 0.4); }
+            50% { box-shadow: 0 5px 25px rgba(255, 215, 0, 0.6); }
+            100% { box-shadow: 0 5px 15px rgba(255, 77, 0, 0.4); }
         }
     </style>
 </head>
-<link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
-<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-<link rel="shortcut icon" href="/favicon.ico" />
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-<link rel="manifest" href="/site.webmanifest" />
 <body>
-    <header class="header">
-        <div class="header-content">
-            <div class="logo-section">
-                <div class="datetime-display" id="datetime"></div>
-                <h1 class="logo">MIKET</h1>
+    <div class="loading-container">
+        <div class="fire-loading">
+            <div class="flames-wrapper">
+                <div class="flames">
+                    <div class="flame" style="--height: 140px; --rotate: 2deg; left: 10%"></div>
+                    <div class="flame" style="--height: 160px; --rotate: -3deg; left: 25%"></div>
+                    <div class="flame" style="--height: 180px; --rotate: 1deg; left: 40%"></div>
+                    <div class="flame" style="--height: 170px; --rotate: -2deg; left: 55%"></div>
+                    <div class="flame" style="--height: 150px; --rotate: 3deg; left: 70%"></div>
+                    <div class="flame" style="--height: 130px; --rotate: -1deg; left: 85%"></div>
+                </div>
             </div>
-            <div class="menu-icon" id="menuToggle">
-                <i class="fas fa-bars"></i>
-            </div>
+            <div class="fire-core"></div>
         </div>
-    </header>
-
-    <nav class="sidebar" id="sidebar">
-        <div class="close-btn" id="closeBtn">
-            <i class="fas fa-times"></i>
+        <div class="counter" id="counter">0</div>
+        <div class="progress-container">
+            <div class="progress-bar" id="progress"></div>
         </div>
-        <a href="index.html"><i class="fas fa-home"></i> Home</a>
-        <a href="https://www.elnathanwebsite.my.id/hubungiwa.html"><i class="fas fa-user-shield"></i> KHUSUS PEMILIK TOKO</a>
-        <a href="https://wa.me/6283180667700"><i class="fas fa-store"></i> BELI TOKO</a>
-        <a href="https://wa.me/6283180667700"><i class="fas fa-headset"></i> Kontak DEV</a>
-    </nav>
+        <div class="completion-message" id="completionMessage">
+            Loading Complete! 🔥
+        </div>
+        <div class="button-container">
+            <button class="redirect-button" id="redirectButton" onclick="redirectToUrl()">
+                Continue to Website
+            </button>
+        </div>
+        <div class="user-info">
+            <p>Welcome, <span class="username">elnathanwebsite</span></p>
+            <p>Current Time: <span class="datetime" id="datetime">2025-02-22 08:52:44</span></p>
+        </div>
+    </div>
 
-    <main class="main-content">
-        <div class="product-grid" id="product-list"></div>
-    </main>
+    <script>
+        // URL tujuan
+        const redirectURL = "shop.html"; // Ganti dengan URL yang Anda inginkan
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
-        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyDd8glQvhs-IvOMj6LRpJo1vYQi40DPCqM",
-            authDomain: "ethan-el-nathan.firebaseapp.com",
-            databaseURL: "https://ethan-el-nathan-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "ethan-el-nathan",
-            storageBucket: "ethan-el-nathan.appspot.com",
-            messagingSenderId: "1079423989695",
-            appId: "1:1079423989695:web:2137c7a9e1490e90d9130a",
-            measurementId: "G-2G7YS5GZ51"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const database = getDatabase(app);
-
-        // DOM Elements
-        const productList = document.getElementById('product-list');
-        const menuToggle = document.getElementById('menuToggle');
-        const sidebar = document.getElementById('sidebar');
-        const closeBtn = document.getElementById('closeBtn');
-        const datetimeDisplay = document.getElementById('datetime');
-
-        // Update DateTime
-        function updateDateTime() {
-            const now = new Date();
-            const formatted = now.toISOString().replace('T', ' ').substring(0, 19) + ' UTC';
-            datetimeDisplay.textContent = formatted;
+        function createSparks() {
+            const container = document.querySelector('.fire-loading');
+            for (let i = 0; i < 30; i++) {
+                const spark = document.createElement('div');
+                spark.className = 'spark';
+                
+                const startX = Math.random() * 200 - 100;
+                const startY = Math.random() * 50 + 100;
+                const tx = (Math.random() - 0.5) * 200;
+                const ty = -(Math.random() * 200 + 50);
+                
+                spark.style.setProperty('--tx', `${tx}px`);
+                spark.style.setProperty('--ty', `${ty}px`);
+                spark.style.left = `${startX + 125}px`;
+                spark.style.bottom = `${startY}px`;
+                spark.style.animation = `spark ${Math.random() * 1 + 0.5}s linear infinite ${Math.random() * 2}s`;
+                
+                container.appendChild(spark);
+            }
         }
 
-        setInterval(updateDateTime, 1000);
-        updateDateTime();
+        function redirectToUrl() {
+            window.location.href = redirectURL;
+        }
 
-        // Sidebar Toggle
-        menuToggle.addEventListener('click', () => {
-            sidebar.classList.add('active');
-        });
+        let count = 0;
+        const counterElement = document.getElementById('counter');
+        const progressBar = document.getElementById('progress');
+        const completionMessage = document.getElementById('completionMessage');
+        const datetimeElement = document.getElementById('datetime');
 
-        closeBtn.addEventListener('click', () => {
-            sidebar.classList.remove('active');
-        });
+        function updateDateTime() {
+            const now = new Date();
+            const formatted = now.toISOString().replace('T', ' ').substr(0, 19) + ' UTC';
+            datetimeElement.textContent = formatted;
+        }
 
-        document.addEventListener('click', (e) => {
-            if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
-                sidebar.classList.remove('active');
-            }
-        });
-
-        // Load Products
-        const productRef = ref(database, 'products');
-        onValue(productRef, (snapshot) => {
-            productList.innerHTML = '';
-            const data = snapshot.val();
-            
-            if (data) {
-                let delay = 0;
-                for (const id in data) {
-                    const product = data[id];
-                    const productCard = document.createElement('div');
-                    productCard.className = 'product-card';
-                    productCard.style.animationDelay = `${delay}s`;
-                    
-                    productCard.innerHTML = `
-                        <img src="${product.image}" alt="${product.name}" class="product-image"/>
-                        <div class="product-details">
-                            <h3 class="product-name">${product.name}</h3>
-                            <p class="product-description">${product.description}</p>
-                            <p class="product-price">Rp ${product.price.toLocaleString('id-ID')}</p>
-                            <p class="product-stock">Stok: ${product.stock}</p>
-                            <div class="button-container">
-                                <a href="${product.paymentLink}" target="_blank" class="btn btn-primary">
-                                    <i class="fas fa-shopping-cart"></i> Bayar
-                                </a>
-                                <a href="BUATPESANAN.html?product=${encodeURIComponent(product.name)}&price=${product.price}" 
-                                   class="btn btn-secondary">
-                                    <i class="fas fa-clipboard-list"></i> Pesan
-                                </a>
-                            </div>
-                        </div>
-                    `;
-                    
-                    productList.appendChild(productCard);
-                    delay += 0.1;
-                }
+        function updateCounter() {
+            if (count < 100) {
+                count++;
+                counterElement.textContent = count;
+                progressBar.style.width = count + '%';
+                
+                const delay = Math.random() * 20 + 20; // Faster counting (20-40ms)
+                setTimeout(updateCounter, delay);
             } else {
-                productList.innerHTML = '<p style="text-align: center; color: #fff;">Tidak ada produk tersedia.</p>';
+                completionMessage.classList.add('show');
+                const redirectButton = document.getElementById('redirectButton');
+                redirectButton.classList.add('show');
+                setTimeout(() => {
+                    redirectButton.classList.add('animated');
+                }, 500);
             }
-        });
-        
-        if (!window.location.search.includes('welcomtomiket/belanjapraktisdalamsatuweb')) {
-            document.write('<meta http-equiv="refresh" content="0; URL=https://www.elnathanwebsite.my.id/welcometomiket/belanjapraktisdengansatuweb">');
-}
+        }
+
+        // Initialize
+        createSparks();
+        setInterval(updateDateTime, 1000);
+        window.onload = updateCounter;
     </script>
 </body>
 </html>
