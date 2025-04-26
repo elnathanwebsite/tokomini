@@ -32,6 +32,15 @@
             margin: 0 auto;
         }
 
+        .datetime-display {
+            font-weight: bold;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .user-info {
+            font-weight: bold;
+        }
+
         .order-list {
             max-width: 1200px;
             margin: 2rem auto;
@@ -44,6 +53,7 @@
             padding: 1.5rem;
             margin-bottom: 1rem;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
         }
 
         .order-icon {
@@ -99,6 +109,59 @@
             background-color: #45a049;
         }
 
+        .delete-button {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 10px;
+            transition: background-color 0.3s;
+        }
+
+        .delete-button:hover {
+            background-color: #c82333;
+        }
+
+        .order-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 8px;
+            color: white;
+            display: none;
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .notification.success {
+            background-color: #28a745;
+        }
+
+        .notification.error {
+            background-color: #dc3545;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
         @media print {
             .no-print {
                 display: none !important;
@@ -117,7 +180,7 @@
 <body>
     <div class="header">
         <div class="header-content">
-            <div class="datetime-display" id="datetime">2025-02-17 14:13:27</div>
+            <div class="datetime-display" id="datetime">2025-04-26 12:41:26</div>
             <div class="user-info">elnathanwebsite</div>
         </div>
     </div>
@@ -132,7 +195,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-app.js";
-        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-database.js";
+        import { getDatabase, ref, onValue, remove } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDXxVMHR14C2QXq8tzcm2TA5q6AReIyESM",
@@ -142,6 +205,39 @@
 
         const app = initializeApp(firebaseConfig);
         const database = getDatabase(app);
+
+        // Show notification function
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            // Show notification
+            notification.style.display = 'block';
+
+            // Hide and remove notification after 3 seconds
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }, 3000);
+        }
+
+        // Delete order function
+        window.deleteOrder = function(orderId) {
+            if (confirm('Apakah Anda yakin ingin menghapus pesanan ini?')) {
+                const orderRef = ref(database, `orders/${orderId}`);
+                remove(orderRef)
+                    .then(() => {
+                        showNotification('Pesanan berhasil dihapus!', 'success');
+                    })
+                    .catch((error) => {
+                        showNotification('Gagal menghapus pesanan: ' + error.message, 'error');
+                    });
+            }
+        };
 
         // Copy to keyboard function
         window.copyToKeyboard = function(phoneNumber) {
@@ -165,10 +261,14 @@
             location.reload();
         };
 
+        // Update datetime display
         function updateDateTime() {
-            document.getElementById('datetime').textContent = "2025-02-17 14:13:27";
+            const now = new Date();
+            const formatted = now.toISOString().slice(0, 19).replace('T', ' ');
+            document.getElementById('datetime').textContent = formatted;
         }
 
+        // Set up real-time order updates
         const ordersRef = ref(database, 'orders');
         onValue(ordersRef, (snapshot) => {
             const data = snapshot.val();
@@ -200,9 +300,14 @@
                     productHTML += '</ul>';
 
                     orderElement.innerHTML = `
-                        <button class="print-button no-print" onclick="printSingleOrder('${orderId}')">
-                            <i class="fas fa-print"></i> Cetak Pesanan Ini
-                        </button>
+                        <div class="order-actions no-print">
+                            <button class="print-button" onclick="printSingleOrder('${orderId}')">
+                                <i class="fas fa-print"></i> Cetak Pesanan Ini
+                            </button>
+                            <button class="delete-button" onclick="deleteOrder('${orderId}')">
+                                <i class="fas fa-trash"></i> Hapus Pesanan
+                            </button>
+                        </div>
                         <h3><i class="fas fa-user order-icon"></i> Pesanan oleh: ${order.name}</h3>
                         <p><i class="fas fa-map-marker-alt order-icon"></i> Alamat: ${order.address}</p>
                         <p>
@@ -227,7 +332,8 @@
             }
         });
 
-        // Initial datetime update
+        // Update datetime every second
+        setInterval(updateDateTime, 1000);
         updateDateTime();
     </script>
 </body>
