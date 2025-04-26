@@ -22,6 +22,9 @@
             background-color: var(--primary-orange);
             color: white;
             padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
 
         .header-content {
@@ -39,6 +42,13 @@
 
         .user-info {
             font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-info i {
+            font-size: 1.2em;
         }
 
         .order-list {
@@ -54,6 +64,12 @@
             margin-bottom: 1rem;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .order.new-order {
+            background-color: #e3f2fd;
+            border-left: 5px solid #2196F3;
         }
 
         .order-icon {
@@ -103,6 +119,7 @@
             border-radius: 4px;
             cursor: pointer;
             margin-top: 10px;
+            transition: background-color 0.3s;
         }
 
         .print-button:hover {
@@ -151,6 +168,81 @@
             background-color: #dc3545;
         }
 
+        .complete-toggle {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: #4CAF50;
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+
+        .delete-all-button {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 10px;
+            transition: background-color 0.3s;
+        }
+
+        .delete-all-button:hover {
+            background-color: #c82333;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
         @keyframes slideIn {
             from {
                 transform: translateX(100%);
@@ -169,10 +261,30 @@
             .order {
                 page-break-inside: avoid;
                 border: 1px solid #ddd;
+                background-color: white !important;
+                border-left: none !important;
             }
             .header {
                 background-color: white !important;
                 color: black !important;
+                position: static;
+            }
+            .complete-toggle {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+            .order-actions {
+                flex-direction: column;
+            }
+            .delete-button, .phone-button {
+                margin: 5px 0;
             }
         }
     </style>
@@ -180,16 +292,26 @@
 <body>
     <div class="header">
         <div class="header-content">
-            <div class="datetime-display" id="datetime">2025-04-26 12:41:26</div>
-            <div class="user-info">elnathanwebsite</div>
+            <div class="datetime-display" id="datetime">2025-04-26 14:37:01</div>
+            <div class="user-info">
+                <i class="fas fa-user"></i>
+                <span>elnathaners12</span>
+            </div>
         </div>
     </div>
 
     <div class="order-list">
-        <h1><i class="fas fa-shipping-fast"></i> Perlu Dikirim</h1>
-        <button onclick="window.print()" class="print-button no-print">
-            <i class="fas fa-print"></i> Cetak Semua
-        </button>
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+            <h1><i class="fas fa-shipping-fast"></i> Perlu Dikirim</h1>
+            <div class="header-buttons no-print">
+                <button onclick="window.print()" class="print-button">
+                    <i class="fas fa-print"></i> Cetak Semua
+                </button>
+                <button onclick="deleteAllOrders()" class="delete-all-button">
+                    <i class="fas fa-trash-alt"></i> Hapus Semua Pesanan
+                </button>
+            </div>
+        </div>
         <div id="orders"></div>
     </div>
 
@@ -206,17 +328,14 @@
         const app = initializeApp(firebaseConfig);
         const database = getDatabase(app);
 
-        // Show notification function
         function showNotification(message, type) {
             const notification = document.createElement('div');
             notification.className = `notification ${type}`;
             notification.textContent = message;
             document.body.appendChild(notification);
 
-            // Show notification
             notification.style.display = 'block';
 
-            // Hide and remove notification after 3 seconds
             setTimeout(() => {
                 notification.style.opacity = '0';
                 setTimeout(() => {
@@ -225,7 +344,6 @@
             }, 3000);
         }
 
-        // Delete order function
         window.deleteOrder = function(orderId) {
             if (confirm('Apakah Anda yakin ingin menghapus pesanan ini?')) {
                 const orderRef = ref(database, `orders/${orderId}`);
@@ -239,7 +357,19 @@
             }
         };
 
-        // Copy to keyboard function
+        window.deleteAllOrders = function() {
+            if (confirm('Apakah Anda yakin ingin menghapus SEMUA pesanan? Tindakan ini tidak dapat dibatalkan.')) {
+                const ordersRef = ref(database, 'orders');
+                remove(ordersRef)
+                    .then(() => {
+                        showNotification('Semua pesanan berhasil dihapus!', 'success');
+                    })
+                    .catch((error) => {
+                        showNotification('Gagal menghapus pesanan: ' + error.message, 'error');
+                    });
+            }
+        };
+
         window.copyToKeyboard = function(phoneNumber) {
             navigator.clipboard.writeText(phoneNumber).then(() => {
                 const messageId = `copy-message-${phoneNumber}`;
@@ -251,7 +381,6 @@
             });
         };
 
-        // Print single order function
         window.printSingleOrder = function(orderId) {
             const orderElement = document.getElementById(`order-${orderId}`);
             const originalContents = document.body.innerHTML;
@@ -261,14 +390,17 @@
             location.reload();
         };
 
-        // Update datetime display
+        window.toggleOrderComplete = function(orderId) {
+            const orderElement = document.getElementById(`order-${orderId}`);
+            orderElement.classList.toggle('new-order');
+        };
+
         function updateDateTime() {
             const now = new Date();
             const formatted = now.toISOString().slice(0, 19).replace('T', ' ');
             document.getElementById('datetime').textContent = formatted;
         }
 
-        // Set up real-time order updates
         const ordersRef = ref(database, 'orders');
         onValue(ordersRef, (snapshot) => {
             const data = snapshot.val();
@@ -276,12 +408,13 @@
             
             if (data) {
                 ordersContainer.innerHTML = '';
-                Object.entries(data).forEach(([orderId, order]) => {
+                const orders = Object.entries(data).reverse();
+                
+                orders.forEach(([orderId, order]) => {
                     const orderElement = document.createElement('div');
-                    orderElement.className = 'order';
+                    orderElement.className = 'order new-order';
                     orderElement.id = `order-${orderId}`;
                     
-                    // Generate product list HTML
                     let productHTML = '<ul class="product-list">';
                     if (Array.isArray(order.products)) {
                         order.products.forEach(product => {
@@ -319,6 +452,13 @@
                         </p>
                         <h4><i class="fas fa-shopping-cart order-icon"></i> Produk:</h4>
                         ${productHTML}
+                        <div class="complete-toggle no-print">
+                            <span>Selesai</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" onchange="toggleOrderComplete('${orderId}')">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
                     `;
                     ordersContainer.appendChild(orderElement);
                 });
@@ -332,7 +472,6 @@
             }
         });
 
-        // Update datetime every second
         setInterval(updateDateTime, 1000);
         updateDateTime();
     </script>
