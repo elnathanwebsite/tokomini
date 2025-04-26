@@ -72,6 +72,11 @@
             border-left: 5px solid #2196F3;
         }
 
+        .order.completed {
+            background-color: white;
+            border-left: none;
+        }
+
         .order-icon {
             color: var(--primary-orange);
             margin-right: 0.5rem;
@@ -292,7 +297,7 @@
 <body>
     <div class="header">
         <div class="header-content">
-            <div class="datetime-display" id="datetime">2025-04-26 14:37:01</div>
+            <div class="datetime-display" id="datetime">2025-04-26 15:02:55</div>
             <div class="user-info">
                 <i class="fas fa-user"></i>
                 <span>elnathaners12</span>
@@ -315,7 +320,8 @@
         <div id="orders"></div>
     </div>
 
-    <script type="module">
+    <audio id="notificationSound" src="https://notificationsounds.com/storage/sounds/file-sounds-1150-pristine.mp3" preload="auto"></audio>
+        <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-app.js";
         import { getDatabase, ref, onValue, remove } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-database.js";
 
@@ -328,6 +334,25 @@
         const app = initializeApp(firebaseConfig);
         const database = getDatabase(app);
 
+        // Functions for managing order status in localStorage
+        function saveOrderStatus(orderId, isComplete) {
+            const orderStatuses = JSON.parse(localStorage.getItem('orderStatuses') || '{}');
+            orderStatuses[orderId] = isComplete;
+            localStorage.setItem('orderStatuses', JSON.stringify(orderStatuses));
+        }
+
+        function getOrderStatus(orderId) {
+            const orderStatuses = JSON.parse(localStorage.getItem('orderStatuses') || '{}');
+            return orderStatuses[orderId] || false;
+        }
+
+        // Function to play notification sound
+        function playNotificationSound() {
+            const audio = document.getElementById('notificationSound');
+            audio.play().catch(error => console.log('Error playing sound:', error));
+        }
+
+        // Function to show notifications
         function showNotification(message, type) {
             const notification = document.createElement('div');
             notification.className = `notification ${type}`;
@@ -344,11 +369,45 @@
             }, 3000);
         }
 
+        // Function to send to WhatsApp
+        async function autoSendToWhatsApp(orderDetails) {
+            let message = `*PESANAN BARU!*\n\n`;
+            message += `*Nama:* ${orderDetails.name}\n`;
+            message += `*Alamat:* ${orderDetails.address}\n`;
+            message += `*No. Telp:* ${orderDetails.phone}\n\n`;
+            message += `*Detail Produk:*\n`;
+            
+            if (Array.isArray(orderDetails.products)) {
+                orderDetails.products.forEach(product => {
+                    message += `- ${product.name} (${product.quantity} pcs) - Rp ${product.price.toLocaleString()}\n`;
+                });
+            } else {
+                message += `- ${orderDetails.product} (${orderDetails.quantity} pcs)\n`;
+            }
+
+            const encodedMessage = encodeURIComponent(message);
+            const phoneNumber = '6283180667700';
+            const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+
+            try {
+                window.open(whatsappURL, '_blank');
+                showNotification('Pesanan baru telah dikirim ke WhatsApp!', 'success');
+            } catch (error) {
+                console.error('Error sending to WhatsApp:', error);
+                showNotification('Gagal mengirim ke WhatsApp: ' + error.message, 'error');
+            }
+        }
+
+        // Delete order function
         window.deleteOrder = function(orderId) {
             if (confirm('Apakah Anda yakin ingin menghapus pesanan ini?')) {
                 const orderRef = ref(database, `orders/${orderId}`);
                 remove(orderRef)
                     .then(() => {
+                        // Remove status from localStorage
+                        const orderStatuses = JSON.parse(localStorage.getItem('orderStatuses') || '{}');
+                        delete orderStatuses[orderId];
+                        localStorage.setItem('orderStatuses', JSON.stringify(orderStatuses));
                         showNotification('Pesanan berhasil dihapus!', 'success');
                     })
                     .catch((error) => {
@@ -357,11 +416,14 @@
             }
         };
 
+        // Delete all orders function
         window.deleteAllOrders = function() {
             if (confirm('Apakah Anda yakin ingin menghapus SEMUA pesanan? Tindakan ini tidak dapat dibatalkan.')) {
                 const ordersRef = ref(database, 'orders');
                 remove(ordersRef)
                     .then(() => {
+                        // Clear localStorage
+                        localStorage.removeItem('orderStatuses');
                         showNotification('Semua pesanan berhasil dihapus!', 'success');
                     })
                     .catch((error) => {
@@ -370,6 +432,7 @@
             }
         };
 
+        // Copy to keyboard function
         window.copyToKeyboard = function(phoneNumber) {
             navigator.clipboard.writeText(phoneNumber).then(() => {
                 const messageId = `copy-message-${phoneNumber}`;
@@ -381,6 +444,7 @@
             });
         };
 
+        // Print single order function
         window.printSingleOrder = function(orderId) {
             const orderElement = document.getElementById(`order-${orderId}`);
             const originalContents = document.body.innerHTML;
@@ -390,21 +454,53 @@
             location.reload();
         };
 
+        // Toggle order complete function
         window.toggleOrderComplete = function(orderId) {
             const orderElement = document.getElementById(`order-${orderId}`);
-            orderElement.classList.toggle('new-order');
+            const checkbox = orderElement.querySelector('input[type="checkbox"]');
+            const isComplete = checkbox.checked;
+            
+            if (isComplete) {
+                orderElement.classList.remove('new-order');
+                orderElement.classList.add('completed');
+            } else {
+                orderElement.classList.add('new-order');
+                orderElement.classList.remove('completed');
+            }
+            
+            saveOrderStatus(orderId, isComplete);
         };
 
+        // Update date time function with UTC
         function updateDateTime() {
             const now = new Date();
-            const formatted = now.toISOString().slice(0, 19).replace('T', ' ');
-            document.getElementById('datetime').textContent = formatted;
+            const utcString = now.toISOString().slice(0, 19).replace('T', ' ');
+            document.getElementById('datetime').textContent = utcString;
         }
 
+        // Initialize orders monitoring
         const ordersRef = ref(database, 'orders');
+        let previousOrders = null;
+
         onValue(ordersRef, (snapshot) => {
             const data = snapshot.val();
             const ordersContainer = document.getElementById('orders');
+            
+            // Check for new orders
+            if (data && previousOrders) {
+                const newOrders = Object.entries(data).filter(([orderId]) => {
+                    return !previousOrders[orderId];
+                });
+                
+                if (newOrders.length > 0) {
+                    playNotificationSound();
+                    newOrders.forEach(([_, order]) => {
+                        autoSendToWhatsApp(order);
+                    });
+                }
+            }
+            
+            previousOrders = data;
             
             if (data) {
                 ordersContainer.innerHTML = '';
@@ -412,7 +508,9 @@
                 
                 orders.forEach(([orderId, order]) => {
                     const orderElement = document.createElement('div');
-                    orderElement.className = 'order new-order';
+                    const isComplete = getOrderStatus(orderId);
+                    
+                    orderElement.className = `order ${isComplete ? 'completed' : 'new-order'}`;
                     orderElement.id = `order-${orderId}`;
                     
                     let productHTML = '<ul class="product-list">';
@@ -455,7 +553,7 @@
                         <div class="complete-toggle no-print">
                             <span>Selesai</span>
                             <label class="toggle-switch">
-                                <input type="checkbox" onchange="toggleOrderComplete('${orderId}')">
+                                <input type="checkbox" onchange="toggleOrderComplete('${orderId}')" ${isComplete ? 'checked' : ''}>
                                 <span class="toggle-slider"></span>
                             </label>
                         </div>
@@ -472,6 +570,7 @@
             }
         });
 
+        // Start updating date time
         setInterval(updateDateTime, 1000);
         updateDateTime();
     </script>
